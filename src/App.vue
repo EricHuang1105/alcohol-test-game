@@ -1,68 +1,77 @@
 <template>
   <div id="app" class="container">
     
-    <div v-if="step === 'start-page'" class="card cover-card">
-      <div class="cover-visual">
-        <img :src="coverImage" alt="遊戲封面" class="kv-image">
-      </div>
-      <div class="cover-content">
-        <h1>尋找你的<br>台灣特有種微醺精靈</h1>
-        <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
-        <button @click="openAgeModal" class="btn">開始測驗</button>
-      </div>
-    </div>
-
-    <div v-if="isAgeModalOpen" class="modal-overlay">
-      <div class="modal-card">
-        <h2>🔞 內容確認</h2>
-        <p>本測驗涉及飲酒文化內容<br>請確認您是否已滿 18 歲？</p>
-        <div class="modal-btns">
-          <button @click="confirmAge" class="btn">是，我已滿 18 歲</button>
-          <button @click="alertUnderage" class="btn btn-outline">否</button>
-        </div>
-        <p class="legal-warning-small">未滿 18 歲請勿飲酒</p>
-      </div>
-    </div>
-
-    <div v-else-if="step === 'quiz'" class="card quiz-page-card">
-      <div class="progress-bar">
-        <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
-      </div>
-      <p class="q-count">Question {{ currentQuestion + 1 }} / 8</p>
-      <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
-      <div class="options">
-        <button 
-          v-for="(opt, i) in questions[currentQuestion].options" 
-          :key="i" 
-          @click="nextQuestion(opt.score)"
-          class="btn-option"
-        >
-          {{ opt.text }}
-        </button>
-      </div>
-    </div>
-
-    <div v-else-if="step === 'loading'" class="card loading-card">
-      <div class="shaking-animation">🍸</div>
-      <p>茶梅小精靈正在調製專屬配方...</p>
-    </div>
-
-    <div v-else-if="step === 'result'" class="card result-card">
-      <p class="result-pre">你的微醺人格是</p>
-      <h2 class="result-title">{{ resultData.title }}</h2>
+    <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
+    <Transition name="fade" mode="out-in">
       
-      <div class="result-visual">
-        <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
+      <div v-if="step === 'start-page'" class="card cover-card">
+        <div class="cover-visual">
+          <img :src="coverImage" alt="遊戲封面" class="kv-image">
+        </div>
+        <div class="cover-content">
+          <h1>尋找你的<br>台灣特有種微醺精靈</h1>
+          <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
+          <button @click="openAgeModal" class="btn">開始測驗</button>
+        </div>
       </div>
 
-      <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
-      <p class="description">{{ resultData.desc }}</p>
-      <div class="guide">
-        <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
+      <div v-else-if="step === 'quiz'" class="card quiz-page-card">
+        <div class="progress-bar">
+          <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
+        </div>
+        <!-- 優化：將 8 改為 questions.length 動態渲染 -->
+        <p class="q-count">Question {{ currentQuestion + 1 }} / {{ questions.length }}</p>
+        <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
+        <div class="options">
+          <button 
+            v-for="(opt, i) in questions[currentQuestion].options" 
+            :key="i" 
+            @click="nextQuestion(opt.score)"
+            class="btn-option"
+          >
+            {{ opt.text }}
+          </button>
+        </div>
       </div>
-      <button @click="reset" class="btn-reset">重新測驗</button>
-      <button @click="goToStore" class="btn">為你的精靈訂製專屬禮物</button>
-    </div>
+
+      <div v-else-if="step === 'loading'" class="card loading-card">
+        <div class="shaking-animation">🍸</div>
+        <p>茶梅小精靈正在調製專屬配方...</p>
+      </div>
+
+      <div v-else-if="step === 'result'" class="card result-card">
+        <p class="result-pre">你的微醺人格是</p>
+        <h2 class="result-title">{{ resultData.title }}</h2>
+        
+        <div class="result-visual">
+          <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
+        </div>
+
+        <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
+        <p class="description">{{ resultData.desc }}</p>
+        <div class="guide">
+          <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
+        </div>
+        <button @click="reset" class="btn-reset">重新測驗</button>
+        <button @click="goToStore" class="btn">為你的精靈訂製專屬禮物</button>
+      </div>
+
+    </Transition>
+
+    <!-- 年齡確認彈窗 (獨立於主流程之外) -->
+    <Transition name="modal">
+      <div v-if="isAgeModalOpen" class="modal-overlay">
+        <div class="modal-card">
+          <h2>🔞 內容確認</h2>
+          <p>本測驗涉及飲酒文化內容<br>請確認您是否已滿 18 歲？</p>
+          <div class="modal-btns">
+            <button @click="confirmAge" class="btn">是，我已滿 18 歲</button>
+            <button @click="alertUnderage" class="btn btn-outline">否</button>
+          </div>
+          <p class="legal-warning-small">未滿 18 歲請勿飲酒</p>
+        </div>
+      </div>
+    </Transition>
 
   </div>
 </template>
@@ -120,67 +129,104 @@ const nextQuestion = (score) => {
     setTimeout(() => { step.value = 'result' }, 2000)
   }
 }
-const reset = () => { step.value = 'start-page'; currentQuestion.value = 0; totalScore.value = 0; }
-const goToStore = () => { window.location.href = "https://your-official-site.com" }
+const reset = () => { 
+  step.value = 'start-page'; 
+  currentQuestion.value = 0; 
+  totalScore.value = 0; 
+}
+const goToStore = () => { 
+  // TODO: 上線前記得替換為真實連結
+  window.location.href = "https://your-official-site.com" 
+}
 </script>
 
 <style scoped>
-.container { max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; padding: 20px; box-sizing: border-box; position: relative; font-family: 'PingFang TC', 'Heiti TC', sans-serif; }
-.card { 
-  background: white; 
-  border-radius: 20px; 
-  padding: 30px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-  /* ⬇️ 修改這裡 */
-  margin-top: 20px; 
-  text-align: center; 
+.container { 
+  max-width: 400px; 
+  margin: 0 auto; 
+  min-height: 100vh; 
+  background: #fdf5e6; 
+  padding: 20px; 
+  box-sizing: border-box; 
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 讓內容在行動裝置上垂直置中 */
 }
 
-/* 原本的 .card 樣式不要動 */
+/* 移除重複的 .card，整合成一個 */
 .card {
   background: white;
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-top: 20px;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* ⬇️ 新增這段專屬樣式 */
 .quiz-page-card {
-  /* 將原本的 20px 增加到 80px */
-  margin-top: 80px; 
+  margin-top: 0px; 
 }
 
 /* 封面樣式 */
 .cover-visual { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
 .cover-content h1 { font-size: 24px; color: #8b4513; margin: 20px 0; line-height: 1.4; }
+.cover-content p { color: #666; margin-bottom: 10px; }
 
 /* 彈窗樣式 */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.modal-card { background: white; width: 80%; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+.modal-card { background: white; width: 80%; max-width: 320px; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+.modal-card h2 { color: #8b4513; margin-bottom: 15px;}
+.modal-card p { line-height: 1.5; color: #444; }
 
 /* 按鈕樣式 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.2s; }
+.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.2s; font-weight: bold;}
 .btn:active { transform: scale(0.98); }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; transition: 0.3s; }
-.btn-option:hover { background: #fff8f0; border-color: #8b4513; }
+.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; transition: 0.3s; color: #333; line-height: 1.4;}
+.btn-option:hover, .btn-option:active { background: #fff8f0; border-color: #8b4513; }
 
 /* 進度條與動畫 */
-.progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 20px; }
-.progress { background: #8b4513; height: 100%; border-radius: 4px; transition: 0.3s; }
+.progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
+.progress { background: #8b4513; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
+.q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
+
+/* 載入動畫 */
+.loading-card { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
 .shaking-animation { font-size: 60px; animation: shake 0.6s infinite; margin-bottom: 20px; }
 @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
 
 /* 結果頁樣式 */
+.result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
 .spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
-.result-title { color: #8b4513; margin: 10px 0; font-size: 26px; }
+.result-title { color: #8b4513; margin: 10px 0; font-size: 28px; }
 .spirit-animal { font-size: 20px; color: #d2691e; margin-bottom: 15px; font-weight: bold; }
 .description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
-.guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; }
-.btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; }
+.guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; line-height: 1.5; color: #444;}
+.btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; font-size: 14px;}
 .legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
+
+/* --- Vue Transition 動畫樣式 --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
 </style>
