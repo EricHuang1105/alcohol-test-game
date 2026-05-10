@@ -1,17 +1,14 @@
 <template>
   <div id="app" class="container">
     
-    <!-- 右上角音量控制按鈕 -->
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
       {{ isMuted ? '🔇 靜音中' : '🔊 開啟音效' }}
     </button>
     
-    <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
     <Transition name="fade" mode="out-in">
-      
       <div v-if="step === 'start-page'" class="card cover-card">
         <div class="cover-visual">
-          <img :src="coverImage" alt="遊戲封面" class="kv-image">
+          <img src="https://via.placeholder.com/400x300?text=Spirit+Quiz" alt="遊戲封面" class="kv-image">
         </div>
         <div class="cover-content">
           <h1>尋找你的<br>台灣特有種微醺精靈</h1>
@@ -39,7 +36,6 @@
       </div>
 
       <div v-else-if="step === 'loading'" class="card loading-card">
-        <!-- 替換為 MP4 影片，使用 autoplay loop muted playsinline 確保手機能自動靜音播放 -->
         <div class="video-container">
           <video autoplay loop muted playsinline class="loading-video">
             <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
@@ -52,11 +48,9 @@
       <div v-else-if="step === 'result'" class="card result-card">
         <p class="result-pre">你的微醺人格是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
-        
         <div class="result-visual">
           <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
         </div>
-
         <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
         <p class="description">{{ resultData.desc }}</p>
         <div class="guide">
@@ -65,10 +59,8 @@
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
       </div>
-
     </Transition>
 
-    <!-- 年齡確認彈窗 (獨立於主流程之外) -->
     <Transition name="modal">
       <div v-if="isAgeModalOpen" class="modal-overlay">
         <div class="modal-card">
@@ -89,8 +81,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// 1. 匯入所有圖片資源 (請確保路徑正確)
-import coverImageFile from './assets/cover.png'
+// 1. 資源匯入 (請確保這些檔案確實存在於 src/assets/)
 import img1 from './assets/result_1.webp'
 import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
@@ -98,37 +89,32 @@ import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
 
 // 2. 狀態管理
-const coverImage = ref(coverImageFile)
 const step = ref('start-page') 
 const isAgeModalOpen = ref(false)
 const currentQuestion = ref(0)
 const totalScore = ref(0)
 const isMuted = ref(false)
 
-// 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
+// 3. 音訊設定 (使用免費商用連結)
 const bgm = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3')
-bgm.loop = true // 設定循環播放
+bgm.loop = true
 const clickSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b817edba.mp3')
 
-// 播放按鍵音效的函式
 const playClickSound = () => {
   if (!isMuted.value) {
-    clickSound.currentTime = 0 // 讓音效每次都從頭播放，避免連點卡頓
-    clickSound.play().catch(err => console.log('音效播放被瀏覽器阻擋:', err))
+    clickSound.pause();
+    clickSound.currentTime = 0;
+    clickSound.play().catch(e => console.log("音效播放被阻擋"));
   }
 }
 
-// 切換靜音
 const toggleMute = () => {
   isMuted.value = !isMuted.value
   bgm.muted = isMuted.value
   clickSound.muted = isMuted.value
-  if (!isMuted.value && step.value !== 'start-page') {
-    bgm.play().catch(err => console.log('BGM播放被瀏覽器阻擋:', err))
-  }
 }
 
-// 4. 心理測驗題目數據
+// 4. 題目數據
 const questions = [
   { text: "結束一整天高壓疲勞的工作回到家，你的第一反應是？", options: [{ text: "拖延症發作，回家只想癱坐在沙發上，完全不想動", score: 1 }, { text: "迅速洗好澡，點起香氛並放點音樂，躲進專屬自己的防護罩裡", score: 2 }, { text: "雖然很累，但還是會先把今天的進度條推到 100%，享受如釋重負的感覺", score: 3 }]},
   { text: "剛下班手機亮起老闆要求加班的訊息，你會？", options: [{ text: "假裝沒看到，只想跟世界切斷連結", score: 1 }, { text: "認命處理完畢，之後開瓶酒小小慶祝", score: 2 }, { text: "截圖發限動牢騷，想要有人陪伴感", score: 3 }]},
@@ -137,52 +123,39 @@ const questions = [
   { text: "當你覺得生活資訊量過載時，你會？", options: [{ text: "把自己捲成一顆球，擋住吵鬧", score: 1 }, { text: "喝口酒清空腦袋資訊，聽見內心低語", score: 2 }, { text: "整理房間欣賞美物，找回生活驕傲", score: 3 }]},
   { text: "對你來說，「喝杯酒享受微醺」的意義？", options: [{ text: "讓想躺平的小怪獸出來透氣", score: 1 }, { text: "是靈魂的獎賞，撫平工作焦慮", score: 2 }, { text: "是一把鑰匙，說出不敢說的真心話", score: 3 }]},
   { text: "在深夜時刻，你通常處於什麼狀態？", options: [{ text: "思緒像在山林間輕巧越過，很活躍", score: 1 }, { text: "忙完一天，只想呼呼大睡", score: 2 }, { text: "沉浸在質感空間，對品味感到滿足", score: 3 }]},
-  { text: "你內心最害怕或最想逃避的事情是？", options: [{ text: "無謂的努力與高壓，不想努力了", score: 1 }, { text: "在人群中顯得平庸，被貼上盲從標籤", score: 2 }, { text: "害怕失去好友，感到孤獨缺乏歸屬感", score: 3 }]}
+  { text: "你內心最害怕或最想逃避的事情是？", options: [{ text: "無謂的努力與高壓，不想努力了", score: 1 }, { text: "在人群中顯得平庸，被貼上盲從標籤", score: 2 }, { text: "害怕失去好友，感到孤獨歸屬感", score: 3 }]}
 ]
 
-// 5. 結果判定邏輯
 const resultData = computed(() => {
   const s = totalScore.value
-  if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，你只想把自己捲成一顆球。", guide: "適合不需費心準備、輕鬆易飲的酒款。" }
-  if (s <= 14) return { title: "自由獨享型", animal: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time 與自由獨享！喜歡躲進專屬自己的防護罩裡。", guide: "適合帶有木質調或草本香氣的特調。" }
-  if (s <= 17) return { title: "踏實成就型", animal: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，最享受任務完成後的成就感。", guide: "適合層次豐富、尾韻甘甜的酒款。" }
-  if (s <= 21) return { title: "質感審美型", animal: "石虎精靈", image: img4, desc: "你具備極高的質感自信與審美優越感！美物讓你找回對生活的驕傲。", guide: "適合包裝精緻、風味獨特且具備設計感的酒款。" }
-  return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面裝淡定，內心很需要陪伴。", guide: "適合與三五好友分享、能快速打開話匣子的派對酒款。" }
+  if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！", guide: "適合不需費心準備、輕鬆易飲的酒款。" }
+  if (s <= 14) return { title: "自由獨享型", animal: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time！", guide: "適合帶有木質調或草本香氣的特調。" }
+  if (s <= 17) return { title: "踏實成就型", animal: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求成就感！", guide: "適合層次豐富、尾韻甘甜的酒款。" }
+  if (s <= 21) return { title: "質感審美型", animal: "石虎精靈", image: img4, desc: "你具備極高的審美優越感！", guide: "適合包裝精緻、風味獨特的酒款。" }
+  return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要歸屬感！", guide: "適合與三五好友分享的派對酒款。" }
 })
 
-// --- 找到原本的互動方法區塊，並將其完整替換如下 ---
-
-// 6. 互動方法 (包含修正後的音效觸發邏輯)
-const handleOpenAgeModal = () => { 
-  playClickSound(); // 這裡也要呼叫音效
-  isAgeModalOpen.value = true; 
-}
+// 5. 互動方法 (全檔案僅限一份)
+const handleOpenAgeModal = () => { playClickSound(); isAgeModalOpen.value = true; }
 
 const handleConfirmAge = () => { 
-  playClickSound(); // 點擊確認時發聲
+  playClickSound(); 
   isAgeModalOpen.value = false; 
   step.value = 'quiz';
-  // 在使用者第一次互動後啟動 BGM
   if (!isMuted.value) {
-    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
+    bgm.play().catch(e => console.log("BGM播放被阻擋"));
   }
 }
 
-const handleAlertUnderage = () => { 
-  playClickSound();
-  alert("未滿 18 歲請勿飲酒。"); 
-}
+const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿飲酒。"); }
 
-// 這是你剛才詢問的重點函數：處理選項點擊
 const handleOptionClick = (score) => {
-  playClickSound(); // 觸發按鍵音效
+  playClickSound();
   totalScore.value += score;
-  
   if (currentQuestion.value < questions.length - 1) {
     currentQuestion.value++;
   } else {
     step.value = 'loading';
-    // 進入載入畫面，3秒後顯示結果
     setTimeout(() => { step.value = 'result' }, 3000);
   }
 }
@@ -200,149 +173,24 @@ const handleGoToStore = () => {
   playClickSound();
   window.location.href = "https://your-official-site.com";
 }
-
-const handleConfirmAge = () => { 
-  playClickSound();
-  isAgeModalOpen.value = false; 
-  step.value = 'quiz';
-  // 在使用者第一次互動(確認年齡)後，才正式啟動背景音樂
-  if (!isMuted.value) {
-    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
-  }
-}
-
-const handleAlertUnderage = () => { 
-  playClickSound();
-  alert("未滿 18 歲請勿飲酒。"); 
-}
-
-const handleOptionClick = (score) => {
-  playClickSound();
-  totalScore.value += score
-  if (currentQuestion.value < questions.length - 1) {
-    currentQuestion.value++
-  } else {
-    step.value = 'loading'
-    setTimeout(() => { step.value = 'result' }, 3000) // 為了讓過場影片播久一點，我將時間延長到3秒
-  }
-}
-
-const handleReset = () => { 
-  playClickSound();
-  step.value = 'start-page'; 
-  currentQuestion.value = 0; 
-  totalScore.value = 0; 
-  bgm.pause(); // 回到首頁時先暫停音樂
-  bgm.currentTime = 0;
-}
-
-const handleGoToStore = () => { 
-  playClickSound();
-  // TODO: 上線前記得替換為真實連結
-  window.location.href = "https://your-official-site.com" 
-}
 </script>
 
 <style scoped>
-.container { 
-  max-width: 400px; 
-  margin: 0 auto; 
-  min-height: 100vh; 
-  background: #fdf5e6; 
-  padding: 20px; 
-  box-sizing: border-box; 
-  position: relative; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* 音量按鈕樣式 */
-.btn-mute {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #8b4513;
-  color: #8b4513;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.quiz-page-card { margin-top: 0px; }
-
-/* 封面樣式 */
-.cover-visual { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
+.container { max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;}
+.btn-mute { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); border: 1px solid #8b4513; color: #8b4513; padding: 8px 12px; border-radius: 20px; font-size: 14px; cursor: pointer; z-index: 10; }
+.card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 100%; box-sizing: border-box; }
+.cover-visual { width: 100%; height: 250px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
-.cover-content h1 { font-size: 24px; color: #8b4513; margin: 20px 0; line-height: 1.4; }
-.cover-content p { color: #666; margin-bottom: 10px; }
-
-/* 彈窗樣式 */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.modal-card { background: white; width: 80%; max-width: 320px; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-.modal-card h2 { color: #8b4513; margin-bottom: 15px;}
-.modal-card p { line-height: 1.5; color: #444; }
-
-/* 按鈕樣式 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.2s; font-weight: bold;}
-.btn:active { transform: scale(0.98); }
+.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; font-weight: bold; }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; transition: 0.3s; color: #333; line-height: 1.4;}
-.btn-option:hover, .btn-option:active { background: #fff8f0; border-color: #8b4513; }
-
-/* 進度條與動畫 */
+.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; }
 .progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
-.progress { background: #8b4513; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-.q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
-.q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-
-/* 載入動畫與影片 */
-.loading-card { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
-.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+.progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
+.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 20px; border: 4px solid #8b4513; }
 .loading-video { width: 100%; height: 100%; object-fit: cover; }
-
-/* 結果頁樣式 */
-.result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
-.result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
-.spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
-.result-title { color: #8b4513; margin: 10px 0; font-size: 28px; }
-.spirit-animal { font-size: 20px; color: #d2691e; margin-bottom: 15px; font-weight: bold; }
-.description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
-.guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; line-height: 1.5; color: #444;}
-.btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; font-size: 14px;}
-.legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
-
-/* --- Vue Transition 動畫樣式 --- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
+.spirit-image { width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+.modal-card { background: white; width: 80%; max-width: 320px; padding: 30px; border-radius: 20px; text-align: center; }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
