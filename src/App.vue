@@ -108,7 +108,7 @@ const isMuted = ref(false)
 // 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
 const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3')
 bgm.loop = true
-bgm.volume = 0.0 // [關鍵] 將 BGM 音量調低到 40%，避免蓋過音效
+bgm.volume = 0.01 // [關鍵] 將 BGM 音量調低到 40%，避免蓋過音效
 
 const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3')
 clickSound.volume = 3.0 // [關鍵] 將按鍵音量調到 100%
