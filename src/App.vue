@@ -1,6 +1,11 @@
 <template>
   <div id="app" class="container">
     
+    <!-- 右上角音量控制按鈕 -->
+    <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
+      {{ isMuted ? '🔇 靜音中' : '🔊 開啟音效' }}
+    </button>
+    
     <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
     <Transition name="fade" mode="out-in">
       
@@ -11,7 +16,7 @@
         <div class="cover-content">
           <h1>尋找你的<br>台灣特有種微醺精靈</h1>
           <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
-          <button @click="openAgeModal" class="btn">開始測驗</button>
+          <button @click="handleOpenAgeModal" class="btn">開始測驗</button>
         </div>
       </div>
 
@@ -19,14 +24,13 @@
         <div class="progress-bar">
           <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
         </div>
-        <!-- 優化：將 8 改為 questions.length 動態渲染 -->
         <p class="q-count">Question {{ currentQuestion + 1 }} / {{ questions.length }}</p>
         <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
         <div class="options">
           <button 
             v-for="(opt, i) in questions[currentQuestion].options" 
             :key="i" 
-            @click="nextQuestion(opt.score)"
+            @click="handleOptionClick(opt.score)"
             class="btn-option"
           >
             {{ opt.text }}
@@ -35,7 +39,13 @@
       </div>
 
       <div v-else-if="step === 'loading'" class="card loading-card">
-        <div class="shaking-animation">🍸</div>
+        <!-- 替換為 MP4 影片，使用 autoplay loop muted playsinline 確保手機能自動靜音播放 -->
+        <div class="video-container">
+          <video autoplay loop muted playsinline class="loading-video">
+            <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
+            您的瀏覽器不支援影片標籤。
+          </video>
+        </div>
         <p>茶梅小精靈正在調製專屬配方...</p>
       </div>
 
@@ -52,8 +62,8 @@
         <div class="guide">
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
-        <button @click="reset" class="btn-reset">重新測驗</button>
-        <button @click="goToStore" class="btn">為你的精靈訂製專屬禮物</button>
+        <button @click="handleReset" class="btn-reset">重新測驗</button>
+        <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
       </div>
 
     </Transition>
@@ -65,8 +75,8 @@
           <h2>🔞 內容確認</h2>
           <p>本測驗涉及飲酒文化內容<br>請確認您是否已滿 18 歲？</p>
           <div class="modal-btns">
-            <button @click="confirmAge" class="btn">是，我已滿 18 歲</button>
-            <button @click="alertUnderage" class="btn btn-outline">否</button>
+            <button @click="handleConfirmAge" class="btn">是，我已滿 18 歲</button>
+            <button @click="handleAlertUnderage" class="btn btn-outline">否</button>
           </div>
           <p class="legal-warning-small">未滿 18 歲請勿飲酒</p>
         </div>
@@ -79,7 +89,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// 1. 匯入所有圖片資源
+// 1. 匯入所有圖片資源 (請確保路徑正確)
 import coverImageFile from './assets/cover.png'
 import img1 from './assets/result_1.webp'
 import img2 from './assets/result_2.webp'
@@ -93,8 +103,32 @@ const step = ref('start-page')
 const isAgeModalOpen = ref(false)
 const currentQuestion = ref(0)
 const totalScore = ref(0)
+const isMuted = ref(false)
 
-// 3. 心理測驗題目數據
+// 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
+const bgm = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3')
+bgm.loop = true // 設定循環播放
+const clickSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b817edba.mp3')
+
+// 播放按鍵音效的函式
+const playClickSound = () => {
+  if (!isMuted.value) {
+    clickSound.currentTime = 0 // 讓音效每次都從頭播放，避免連點卡頓
+    clickSound.play().catch(err => console.log('音效播放被瀏覽器阻擋:', err))
+  }
+}
+
+// 切換靜音
+const toggleMute = () => {
+  isMuted.value = !isMuted.value
+  bgm.muted = isMuted.value
+  clickSound.muted = isMuted.value
+  if (!isMuted.value && step.value !== 'start-page') {
+    bgm.play().catch(err => console.log('BGM播放被瀏覽器阻擋:', err))
+  }
+}
+
+// 4. 心理測驗題目數據
 const questions = [
   { text: "結束一整天高壓疲勞的工作回到家，你的第一反應是？", options: [{ text: "拖延症發作，回家只想癱坐在沙發上，完全不想動", score: 1 }, { text: "迅速洗好澡，點起香氛並放點音樂，躲進專屬自己的防護罩裡", score: 2 }, { text: "雖然很累，但還是會先把今天的進度條推到 100%，享受如釋重負的感覺", score: 3 }]},
   { text: "剛下班手機亮起老闆要求加班的訊息，你會？", options: [{ text: "假裝沒看到，只想跟世界切斷連結", score: 1 }, { text: "認命處理完畢，之後開瓶酒小小慶祝", score: 2 }, { text: "截圖發限動牢騷，想要有人陪伴感", score: 3 }]},
@@ -106,7 +140,7 @@ const questions = [
   { text: "你內心最害怕或最想逃避的事情是？", options: [{ text: "無謂的努力與高壓，不想努力了", score: 1 }, { text: "在人群中顯得平庸，被貼上盲從標籤", score: 2 }, { text: "害怕失去好友，感到孤獨缺乏歸屬感", score: 3 }]}
 ]
 
-// 4. 結果判定邏輯
+// 5. 結果判定邏輯
 const resultData = computed(() => {
   const s = totalScore.value
   if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，你只想把自己捲成一顆球。", guide: "適合不需費心準備、輕鬆易飲的酒款。" }
@@ -116,25 +150,49 @@ const resultData = computed(() => {
   return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面裝淡定，內心很需要陪伴。", guide: "適合與三五好友分享、能快速打開話匣子的派對酒款。" }
 })
 
-// 5. 互動方法
-const openAgeModal = () => { isAgeModalOpen.value = true }
-const confirmAge = () => { isAgeModalOpen.value = false; step.value = 'quiz' }
-const alertUnderage = () => { alert("未滿 18 歲請勿飲酒。") }
-const nextQuestion = (score) => {
+// 6. 互動方法 (加入音效觸發)
+const handleOpenAgeModal = () => { 
+  playClickSound(); 
+  isAgeModalOpen.value = true; 
+}
+
+const handleConfirmAge = () => { 
+  playClickSound();
+  isAgeModalOpen.value = false; 
+  step.value = 'quiz';
+  // 在使用者第一次互動(確認年齡)後，才正式啟動背景音樂
+  if (!isMuted.value) {
+    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
+  }
+}
+
+const handleAlertUnderage = () => { 
+  playClickSound();
+  alert("未滿 18 歲請勿飲酒。"); 
+}
+
+const handleOptionClick = (score) => {
+  playClickSound();
   totalScore.value += score
   if (currentQuestion.value < questions.length - 1) {
     currentQuestion.value++
   } else {
     step.value = 'loading'
-    setTimeout(() => { step.value = 'result' }, 2000)
+    setTimeout(() => { step.value = 'result' }, 3000) // 為了讓過場影片播久一點，我將時間延長到3秒
   }
 }
-const reset = () => { 
+
+const handleReset = () => { 
+  playClickSound();
   step.value = 'start-page'; 
   currentQuestion.value = 0; 
   totalScore.value = 0; 
+  bgm.pause(); // 回到首頁時先暫停音樂
+  bgm.currentTime = 0;
 }
-const goToStore = () => { 
+
+const handleGoToStore = () => { 
+  playClickSound();
   // TODO: 上線前記得替換為真實連結
   window.location.href = "https://your-official-site.com" 
 }
@@ -151,10 +209,25 @@ const goToStore = () => {
   position: relative; 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 讓內容在行動裝置上垂直置中 */
+  justify-content: center;
 }
 
-/* 移除重複的 .card，整合成一個 */
+/* 音量按鈕樣式 */
+.btn-mute {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #8b4513;
+  color: #8b4513;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
 .card {
   background: white;
   border-radius: 20px;
@@ -165,9 +238,7 @@ const goToStore = () => {
   box-sizing: border-box;
 }
 
-.quiz-page-card {
-  margin-top: 0px; 
-}
+.quiz-page-card { margin-top: 0px; }
 
 /* 封面樣式 */
 .cover-visual { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
@@ -194,10 +265,10 @@ const goToStore = () => {
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
 
-/* 載入動畫 */
+/* 載入動畫與影片 */
 .loading-card { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
-.shaking-animation { font-size: 60px; animation: shake 0.6s infinite; margin-bottom: 20px; }
-@keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+.loading-video { width: 100%; height: 100%; object-fit: cover; }
 
 /* 結果頁樣式 */
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
