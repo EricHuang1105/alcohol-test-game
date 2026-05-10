@@ -106,25 +106,34 @@ const totalScore = ref(0)
 const isMuted = ref(false)
 
 // 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
-const bgm = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3')
-bgm.loop = true // 設定循環播放
-const clickSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b817edba.mp3')
+const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3')
+bgm.loop = true
+bgm.volume = 0.4 // [關鍵] 將 BGM 音量調低到 40%，避免蓋過音效
 
-// 播放按鍵音效的函式
+const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3')
+clickSound.volume = 1.0 // [關鍵] 將按鍵音量調到 100%
+
+// 強制預載
+onMounted(() => {
+  bgm.load()
+  clickSound.load()
+})
+
 const playClickSound = () => {
   if (!isMuted.value) {
-    clickSound.currentTime = 0 // 讓音效每次都從頭播放，避免連點卡頓
-    clickSound.play().catch(err => console.log('音效播放被瀏覽器阻擋:', err))
+    // 解決部分瀏覽器音效重疊不播的問題
+    const soundClone = clickSound.cloneNode(true) // 克隆一個實體來播放
+    soundClone.volume = 1.0
+    soundClone.play().catch(e => console.log("音效播放失敗:", e))
   }
 }
 
-// 切換靜音
 const toggleMute = () => {
   isMuted.value = !isMuted.value
   bgm.muted = isMuted.value
-  clickSound.muted = isMuted.value
+  // 如果解除靜音且正在測驗中，啟動 BGM
   if (!isMuted.value && step.value !== 'start-page') {
-    bgm.play().catch(err => console.log('BGM播放被瀏覽器阻擋:', err))
+    bgm.play().catch(() => {})
   }
 }
 
