@@ -150,10 +150,55 @@ const resultData = computed(() => {
   return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面裝淡定，內心很需要陪伴。", guide: "適合與三五好友分享、能快速打開話匣子的派對酒款。" }
 })
 
-// 6. 互動方法 (加入音效觸發)
+// --- 找到原本的互動方法區塊，並將其完整替換如下 ---
+
+// 6. 互動方法 (包含修正後的音效觸發邏輯)
 const handleOpenAgeModal = () => { 
-  playClickSound(); 
+  playClickSound(); // 這裡也要呼叫音效
   isAgeModalOpen.value = true; 
+}
+
+const handleConfirmAge = () => { 
+  playClickSound(); // 點擊確認時發聲
+  isAgeModalOpen.value = false; 
+  step.value = 'quiz';
+  // 在使用者第一次互動後啟動 BGM
+  if (!isMuted.value) {
+    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
+  }
+}
+
+const handleAlertUnderage = () => { 
+  playClickSound();
+  alert("未滿 18 歲請勿飲酒。"); 
+}
+
+// 這是你剛才詢問的重點函數：處理選項點擊
+const handleOptionClick = (score) => {
+  playClickSound(); // 觸發按鍵音效
+  totalScore.value += score;
+  
+  if (currentQuestion.value < questions.length - 1) {
+    currentQuestion.value++;
+  } else {
+    step.value = 'loading';
+    // 進入載入畫面，3秒後顯示結果
+    setTimeout(() => { step.value = 'result' }, 3000);
+  }
+}
+
+const handleReset = () => { 
+  playClickSound();
+  step.value = 'start-page'; 
+  currentQuestion.value = 0; 
+  totalScore.value = 0; 
+  bgm.pause();
+  bgm.currentTime = 0;
+}
+
+const handleGoToStore = () => { 
+  playClickSound();
+  window.location.href = "https://your-official-site.com";
 }
 
 const handleConfirmAge = () => { 
