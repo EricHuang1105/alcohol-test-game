@@ -96,6 +96,9 @@ import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
 import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
+// 匯入圖片資源的下方，加入音訊匯入
+import bgmFile from './assets/bgm.mp3'
+import clickFile from './assets/click.mp3'
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
@@ -106,12 +109,13 @@ const totalScore = ref(0)
 const isMuted = ref(false)
 
 // 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
-const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3')
+// 使用匯入的路徑建立音訊物件
+const bgm = new Audio(bgmFile)
 bgm.loop = true
-bgm.volume = 0.4 // [關鍵] 將 BGM 音量調低到 40%，避免蓋過音效
+bgm.volume = 0.3 // 設定適中的背景音量
 
-const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3')
-clickSound.volume = 1.0 // [關鍵] 將按鍵音量調到 100%
+const clickSound = new Audio(clickFile)
+clickSound.volume = 1.0 // 設定較響的按鍵音量
 
 // 強制預載
 onMounted(() => {
