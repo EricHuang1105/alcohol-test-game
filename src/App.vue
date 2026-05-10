@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 // 1. 匯入所有圖片資源 (請確保路徑正確)
 import coverImageFile from './assets/cover.png'
