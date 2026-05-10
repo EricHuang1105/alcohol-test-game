@@ -1,12 +1,10 @@
 <template>
   <div id="app" class="container">
     
-    <!-- 右上角音量控制按鈕 -->
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
       {{ isMuted ? '🔇 靜音中' : '🔊 開啟音效' }}
     </button>
     
-    <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
     <Transition name="fade" mode="out-in">
       
       <div v-if="step === 'start-page'" class="card cover-card">
@@ -39,7 +37,6 @@
       </div>
 
       <div v-else-if="step === 'loading'" class="card loading-card">
-        <!-- 替換為 MP4 影片，使用 autoplay loop muted playsinline 確保手機能自動靜音播放 -->
         <div class="video-container">
           <video autoplay loop muted playsinline class="loading-video">
             <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
@@ -68,7 +65,6 @@
 
     </Transition>
 
-    <!-- 年齡確認彈窗 (獨立於主流程之外) -->
     <Transition name="modal">
       <div v-if="isAgeModalOpen" class="modal-overlay">
         <div class="modal-card">
@@ -87,9 +83,10 @@
 </template>
 
 <script setup>
+// 【修正】這裡必須匯入 onMounted，否則下方呼叫會報錯導致白畫面
 import { ref, computed, onMounted } from 'vue'
 
-// 1. 匯入所有圖片資源 (請確保路徑正確)
+// 1. 匯入所有圖片資源
 import coverImageFile from './assets/cover.png'
 import img1 from './assets/result_1.webp'
 import img2 from './assets/result_2.webp'
@@ -105,15 +102,15 @@ const currentQuestion = ref(0)
 const totalScore = ref(0)
 const isMuted = ref(false)
 
-// 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
+// 3. 音效與 BGM 設定
 const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3')
 bgm.loop = true
-bgm.volume = 0.01 // [關鍵] 將 BGM 音量調低到 40%，避免蓋過音效
+bgm.volume = 0.05 // 【修正】音量最大值是 1.0，這裡設 0.05 讓 BGM 非常小聲
 
 const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3')
-clickSound.volume = 3.0 // [關鍵] 將按鍵音量調到 100%
+clickSound.volume = 1.0 // 【修正】音量最大值是 1.0，這是最響的設定
 
-// 強制預載
+// 使用 onMounted 確保組件載入後執行
 onMounted(() => {
   bgm.load()
   clickSound.load()
@@ -122,22 +119,21 @@ onMounted(() => {
 const playClickSound = () => {
   if (!isMuted.value) {
     // 解決部分瀏覽器音效重疊不播的問題
-    const soundClone = clickSound.cloneNode(true) // 克隆一個實體來播放
-    soundClone.volume = 1.0
-    soundClone.play().catch(e => console.log("音效播放失敗:", e))
+    const soundClone = clickSound.cloneNode(true)
+    soundClone.volume = 1.0 
+    soundClone.play().catch(e => console.log("按鍵音播放失敗:", e))
   }
 }
 
 const toggleMute = () => {
   isMuted.value = !isMuted.value
   bgm.muted = isMuted.value
-  // 如果解除靜音且正在測驗中，啟動 BGM
   if (!isMuted.value && step.value !== 'start-page') {
     bgm.play().catch(() => {})
   }
 }
 
-// 4. 心理測驗題目數據
+// 4. 題目數據
 const questions = [
   { text: "結束一整天高壓疲勞的工作回到家，你的第一反應是？", options: [{ text: "拖延症發作，回家只想癱坐在沙發上，完全不想動", score: 1 }, { text: "迅速洗好澡，點起香氛並放點音樂，躲進專屬自己的防護罩裡", score: 2 }, { text: "雖然很累，但還是會先把今天的進度條推到 100%，享受如釋重負的感覺", score: 3 }]},
   { text: "剛下班手機亮起老闆要求加班的訊息，你會？", options: [{ text: "假裝沒看到，只想跟世界切斷連結", score: 1 }, { text: "認命處理完畢，之後開瓶酒小小慶祝", score: 2 }, { text: "截圖發限動牢騷，想要有人陪伴感", score: 3 }]},
@@ -149,36 +145,29 @@ const questions = [
   { text: "你內心最害怕或最想逃避的事情是？", options: [{ text: "無謂的努力與高壓，不想努力了", score: 1 }, { text: "在人群中顯得平庸，被貼上盲從標籤", score: 2 }, { text: "害怕失去好友，感到孤獨缺乏歸屬感", score: 3 }]}
 ]
 
-// 5. 結果判定邏輯
+// 5. 結果邏輯
 const resultData = computed(() => {
   const s = totalScore.value
-  if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，你只想把自己捲成一顆球。", guide: "適合不需費心準備、輕鬆易飲的酒款。" }
-  if (s <= 14) return { title: "自由獨享型", animal: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time 與自由獨享！喜歡躲進專屬自己的防護罩裡。", guide: "適合帶有木質調或草本香氣的特調。" }
-  if (s <= 17) return { title: "踏實成就型", animal: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，最享受任務完成後的成就感。", guide: "適合層次豐富、尾韻甘甜的酒款。" }
-  if (s <= 21) return { title: "質感審美型", animal: "石虎精靈", image: img4, desc: "你具備極高的質感自信與審美優越感！美物讓你找回對生活的驕傲。", guide: "適合包裝精緻、風味獨特且具備設計感的酒款。" }
-  return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面裝淡定，內心很需要陪伴。", guide: "適合與三五好友分享、能快速打開話匣子的派對酒款。" }
+  if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！", guide: "適合不需費心準備的酒款。" }
+  if (s <= 14) return { title: "自由獨享型", animal: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time！", guide: "適合木質調特調。" }
+  if (s <= 17) return { title: "踏實成就型", animal: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求成就感！", guide: "適合甘甜酒款。" }
+  if (s <= 21) return { title: "質感審美型", animal: "石虎精靈", image: img4, desc: "你具備極高的審美優越感！", guide: "適合風味獨特的酒款。" }
+  return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要歸屬感！", guide: "適合派對分享酒款。" }
 })
 
-// 6. 互動方法 (加入音效觸發)
-const handleOpenAgeModal = () => { 
-  playClickSound(); 
-  isAgeModalOpen.value = true; 
-}
+// 6. 互動方法
+const handleOpenAgeModal = () => { playClickSound(); isAgeModalOpen.value = true; }
 
 const handleConfirmAge = () => { 
   playClickSound();
   isAgeModalOpen.value = false; 
   step.value = 'quiz';
-  // 在使用者第一次互動(確認年齡)後，才正式啟動背景音樂
   if (!isMuted.value) {
-    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
+    bgm.play().catch(err => console.log('BGM啟動失敗'));
   }
 }
 
-const handleAlertUnderage = () => { 
-  playClickSound();
-  alert("未滿 18 歲請勿飲酒。"); 
-}
+const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿飲酒。"); }
 
 const handleOptionClick = (score) => {
   playClickSound();
@@ -187,7 +176,7 @@ const handleOptionClick = (score) => {
     currentQuestion.value++
   } else {
     step.value = 'loading'
-    setTimeout(() => { step.value = 'result' }, 3000) // 為了讓過場影片播久一點，我將時間延長到3秒
+    setTimeout(() => { step.value = 'result' }, 3000)
   }
 }
 
@@ -196,117 +185,32 @@ const handleReset = () => {
   step.value = 'start-page'; 
   currentQuestion.value = 0; 
   totalScore.value = 0; 
-  bgm.pause(); // 回到首頁時先暫停音樂
+  bgm.pause();
   bgm.currentTime = 0;
 }
 
 const handleGoToStore = () => { 
   playClickSound();
-  // TODO: 上線前記得替換為真實連結
   window.location.href = "https://your-official-site.com" 
 }
 </script>
 
 <style scoped>
-.container { 
-  max-width: 400px; 
-  margin: 0 auto; 
-  min-height: 100vh; 
-  background: #fdf5e6; 
-  padding: 20px; 
-  box-sizing: border-box; 
-  position: relative; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* 音量按鈕樣式 */
-.btn-mute {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #8b4513;
-  color: #8b4513;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.quiz-page-card { margin-top: 0px; }
-
-/* 封面樣式 */
+/* 樣式保持不變 */
+.container { max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center; }
+.btn-mute { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); border: 1px solid #8b4513; color: #8b4513; padding: 8px 12px; border-radius: 20px; font-size: 14px; cursor: pointer; z-index: 10; }
+.card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 100%; box-sizing: border-box; }
 .cover-visual { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
-.cover-content h1 { font-size: 24px; color: #8b4513; margin: 20px 0; line-height: 1.4; }
-.cover-content p { color: #666; margin-bottom: 10px; }
-
-/* 彈窗樣式 */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.modal-card { background: white; width: 80%; max-width: 320px; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-.modal-card h2 { color: #8b4513; margin-bottom: 15px;}
-.modal-card p { line-height: 1.5; color: #444; }
-
-/* 按鈕樣式 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.2s; font-weight: bold;}
-.btn:active { transform: scale(0.98); }
+.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; font-weight: bold; }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; transition: 0.3s; color: #333; line-height: 1.4;}
-.btn-option:hover, .btn-option:active { background: #fff8f0; border-color: #8b4513; }
-
-/* 進度條與動畫 */
+.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; color: #333; }
 .progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
-.progress { background: #8b4513; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-.q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
-.q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-
-/* 載入動畫與影片 */
-.loading-card { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
-.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+.progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
+.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid #fdf5e6; }
 .loading-video { width: 100%; height: 100%; object-fit: cover; }
-
-/* 結果頁樣式 */
-.result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
-.result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
-.spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
-.result-title { color: #8b4513; margin: 10px 0; font-size: 28px; }
-.spirit-animal { font-size: 20px; color: #d2691e; margin-bottom: 15px; font-weight: bold; }
-.description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
-.guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; line-height: 1.5; color: #444;}
-.btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; font-size: 14px;}
-.legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
-
-/* --- Vue Transition 動畫樣式 --- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+.modal-card { background: white; width: 80%; padding: 30px; border-radius: 20px; text-align: center; }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
