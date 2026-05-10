@@ -96,7 +96,6 @@ import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
 import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
-// 匯入圖片資源的下方，加入音訊匯入
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
 
@@ -142,8 +141,6 @@ const toggleMute = () => {
 }
 
 // 4. 心理測驗題目數據
-const questions = [
-  // 3. 心理測驗題目數據 (同步企劃書最新內容)
 const questions = [
   { 
     text: "Q1. 結束一天疲勞的工作，回到家你的第一反應是？", 
