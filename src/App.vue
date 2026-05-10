@@ -3,7 +3,7 @@
     
     <!-- 右上角音量控制按鈕 -->
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
-      {{ isMuted ? '🔇 靜音中' : '🔊 開啟音效' }}
+      {{ isMuted ? '🔇' : '🔊' }}
     </button>
     
     <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
@@ -112,10 +112,10 @@ const isMuted = ref(false)
 // 使用匯入的路徑建立音訊物件
 const bgm = new Audio(bgmFile)
 bgm.loop = true
-bgm.volume = 0.3 // 設定適中的背景音量
+bgm.volume = 0.2 // 設定適中的背景音量
 
 const clickSound = new Audio(clickFile)
-clickSound.volume = 1.0 // 設定較響的按鍵音量
+clickSound.volume = 0.7 // 設定較響的按鍵音量
 
 // 強制預載
 onMounted(() => {
