@@ -42,7 +42,7 @@
             <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
           </video>
         </div>
-        <p>茶梅小精靈正在調製專屬配方...</p>
+        <p>茶梅妹正在調製專屬配方...</p>
       </div>
 
       <div v-else-if="step === 'result'" class="card result-card">
