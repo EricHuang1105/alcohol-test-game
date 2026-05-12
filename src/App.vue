@@ -63,12 +63,12 @@
         
         <button @click="handleShare" class="btn btn-share">
           <img :src="shareIcon" alt="分享" class="btn-icon">
-          分享結果，尋找你的同好
+          分享結果，尋找你的同好!
         </button>
 
         <button @click="handleGoToStore" class="btn">
           <img :src="giftIcon" alt="禮物" class="btn-icon">
-          為你的精靈訂製專屬禮物
+          把你的微醺精靈帶回家~
         </button>
       </div>
 
@@ -198,7 +198,7 @@ const handleOptionClick = (score) => {
 const handleReset = () => { 
   playClickSound(); step.value = 'start-page'; currentQuestion.value = 0; totalScore.value = 0; bgm.pause(); bgm.currentTime = 0;
 }
-const handleGoToStore = () => { playClickSound(); window.location.href = "https://your-official-site.com"; }
+const handleGoToStore = () => { playClickSound(); window.location.href = "https://18brew.com.tw/product-category/tea_plum_wine/"; }
 </script>
 
 <style scoped>
