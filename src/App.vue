@@ -12,7 +12,7 @@
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
         </div>
         <div class="cover-content">
-          <h1>尋找你的<br>台灣特有種微醺精靈</h1>
+          <h1 class="main-title">尋找你的<br>台灣特有種微醺精靈</h1>
           <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
           <button @click="handleOpenAgeModal" class="btn">開始測驗</button>
         </div>
@@ -40,18 +40,19 @@
         <div class="video-container">
           <video autoplay loop muted playsinline class="loading-video">
             <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
-            您的瀏覽器不支援影片標籤。
           </video>
         </div>
         <p>茶梅小精靈正在調製專屬配方...</p>
       </div>
 
-     <div v-else-if="step === 'result'" class="card result-card">
+      <div v-else-if="step === 'result'" class="card result-card">
         <p class="result-pre">你的微醺人格是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
+        
         <div class="result-visual">
           <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
         </div>
+
         <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
         <p class="description">{{ resultData.desc }}</p>
         <div class="guide">
@@ -61,18 +62,15 @@
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         
         <button @click="handleShare" class="btn btn-share">
-  <img :src="shareIcon" alt="分享" class="btn-icon">
-  分享結果，尋找你的同好
-</button>
+          <img :src="shareIcon" alt="分享" class="btn-icon">
+          分享結果，尋找你的同好
+        </button>
 
-<button @click="handleReset" class="btn-reset">重新測驗</button>
-
-<button @click="handleGoToStore" class="btn">
-  <img :src="giftIcon" alt="禮物" class="btn-icon">
-  為你的精靈訂製專屬禮物
-</button>
-
-        </div>
+        <button @click="handleGoToStore" class="btn">
+          <img :src="giftIcon" alt="禮物" class="btn-icon">
+          為你的精靈訂製專屬禮物
+        </button>
+      </div>
 
     </Transition>
 
@@ -96,18 +94,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-// 1. 匯入所有圖片資源 (請確保路徑正確)
+// 1. 匯入所有資源
 import coverImageFile from './assets/cover.png'
 import img1 from './assets/result_1.webp'
 import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
 import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
-// ... 原本的匯入 ...
-import bgmFile from './assets/bgm.mp3'
-import clickFile from './assets/click.mp3'
+
 import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
+import bgmFile from './assets/bgm.mp3'
+import clickFile from './assets/click.mp3'
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
@@ -117,15 +115,14 @@ const currentQuestion = ref(0)
 const totalScore = ref(0)
 const isMuted = ref(false)
 
-// 3. 音效與 BGM 設定
+// 3. 音效設定
 const bgm = new Audio(bgmFile)
 bgm.loop = true
-bgm.volume = 0.2 // 設定適中的背景音量
+bgm.volume = 0.2 
 
 const clickSound = new Audio(clickFile)
-clickSound.volume = 0.5 // 設定較響的按鍵音量
+clickSound.volume = 0.5 
 
-// 強制預載
 onMounted(() => {
   bgm.load()
   clickSound.load()
@@ -135,7 +132,7 @@ const playClickSound = () => {
   if (!isMuted.value) {
     const soundClone = clickSound.cloneNode(true) 
     soundClone.volume = 1.0
-    soundClone.play().catch(e => console.log("音效播放失敗:", e))
+    soundClone.play().catch(() => {})
   }
 }
 
@@ -147,75 +144,19 @@ const toggleMute = () => {
   }
 }
 
-// 4. 心理測驗題目數據
+// 4. 測驗題目數據
 const questions = [
-  { 
-    text: "Q1. 結束一天疲勞的工作，回到家你的第一反應是？", 
-    options: [
-      { text: "只想癱坐在沙發上，完全不想動。", score: 1 }, 
-      { text: "洗個澡，點起香氛並放點音樂。", score: 2 }, 
-      { text: "先做完家事，把今天的進度條推到 100%。", score: 3 }
-    ]
-  },
-  { 
-    text: "Q2. 剛下班卻收到老闆要求加班的訊息，你會怎麼做？", 
-    options: [
-      { text: "假裝沒看到，切斷跟工作的連結。", score: 1 }, 
-      { text: "認命處理完畢，結束後開一瓶酒慶祝一下。", score: 2 }, 
-      { text: "截圖發到限動，想要有人站在我這邊。", score: 3 }
-    ]
-  },
-  { 
-    text: "Q3. 難得的週末到來，你最喜歡的放鬆行程是？", 
-    options: [
-      { text: "獨自窩在房間看小說或發呆。", score: 1 }, 
-      { text: "穿上極具個人風格的服飾去逛街。", score: 2 }, 
-      { text: "找三五好友聚在一起大聊特聊。", score: 3 }  
-    ]
-  },
-  { 
-    text: "Q4. 當你在路上被陌生人稱讚你的穿搭，你的反應是？", 
-    options: [
-      { text: "覺得有點不自在，想趕快結束對話。", score: 1 }, 
-      { text: "內心超開心，覺得遇到了懂生活的同好。", score: 2 }, 
-      { text: "表面淡定的說謝謝，心裡早就高興到飛起。", score: 3 } 
-    ]
-  },
-  { 
-    text: "Q5. 當你覺得生活充滿讓你過載的細碎資訊，你會怎麼應對？", 
-    options: [
-      { text: "什麼都不想管，把自己捲起來縮成一顆球。", score: 1 }, 
-      { text: "喝口酒，讓微醺清空腦袋的資訊垃圾。", score: 2 }, 
-      { text: "整理房間，看到整潔的環境心情就好多了。", score: 3 }
-    ]
-  },
-  { 
-    text: "Q6. 對你來說，「享受微醺」最大的意義是什麼？", 
-    options: [
-      { text: "讓內心透透氣，把平常累積的壓力指數歸零。", score: 1 }, 
-      { text: "是給靈魂的獎賞，撫平趕報告或工作後的焦慮。", score: 2 }, 
-      { text: "用來「暖機」自己，說出平時不敢說的真心話。", score: 3 } 
-    ]
-  },
-  { 
-    text: "Q7. 在深夜時刻，你通常處於什麼狀態？", 
-    options: [
-      { text: "思緒像在山林間自由滑翔，非常活躍。", score: 1 }, 
-      { text: "剛忙完一天，只想呼呼大睡。", score: 2 }, 
-      { text: "在自己空間裡享受Ｍe Time。", score: 3 }
-    ]
-  },
-  { 
-    text: "Q8. 你內心最想逃離的事情是什麼？", 
-    options: [
-      { text: "努力卻總是白做工，想大喊「今天不想努力了」。", score: 1 }, 
-      { text: "在人群中顯得平庸，沒有獨特的眼眼光。", score: 2 }, 
-      { text: "害怕隨著時間流逝會漸漸失去身邊的好朋友。", score: 3 }
-    ]
-  }
+  { text: "Q1. 結束一天疲勞的工作，回到家你的第一反應是？", options: [{ text: "只想癱坐在沙發上，完全不想動。", score: 1 }, { text: "洗個澡，點起香氛並放點音樂。", score: 2 }, { text: "先做完家事，把今天的進度條推到 100%。", score: 3 }]},
+  { text: "Q2. 剛下班卻收到老闆要求加班的訊息，你會怎麼做？", options: [{ text: "假裝沒看到，切斷跟工作的連結。", score: 1 }, { text: "認命處理完畢，結束後開一瓶酒慶祝一下。", score: 2 }, { text: "截圖發到限動，想要有人站在我這邊。", score: 3 }]},
+  { text: "Q3. 難得的週末到來，你最喜歡的放鬆行程是？", options: [{ text: "獨自窩在房間看小說或發呆。", score: 1 }, { text: "穿上極具個人風格的服飾去逛街。", score: 2 }, { text: "找三五好友聚在一起大聊特聊。", score: 3 }]},
+  { text: "Q4. 當你在路上被陌生人稱讚你的穿搭，你的反應是？", options: [{ text: "覺得有點不自在，想趕快結束對話。", score: 1 }, { text: "內心超開心，覺得遇到了懂生活的同好。", score: 2 }, { text: "表面淡定的說謝謝，心裡早就高興到飛起。", score: 3 }]},
+  { text: "Q5. 當你覺得生活充滿讓你過載的細碎資訊，你會怎麼應對？", options: [{ text: "什麼都不想管，把自己捲起來縮成一顆球。", score: 1 }, { text: "喝口酒，讓微醺清空腦袋的資訊垃圾。", score: 2 }, { text: "整理房間，看到整潔的環境心情就好多了。", score: 3 }]},
+  { text: "Q6. 對你來說，「享受微醺」最大的意義是什麼？", options: [{ text: "讓內心透透氣，把平常累積的壓力指數歸零。", score: 1 }, { text: "是給靈魂的獎賞，撫平趕報告或工作後的焦慮。", score: 2 }, { text: "用來「暖機」自己，說出平時不敢說的真心話。", score: 3 }]},
+  { text: "Q7. 在深夜時刻，你通常處於什麼狀態？", options: [{ text: "思緒像在山林間自由滑翔，非常活躍。", score: 1 }, { text: "剛忙完一天，只想呼呼大睡。", score: 2 }, { text: "在自己空間裡享受Ｍe Time。", score: 3 }]},
+  { text: "Q8. 你內心最想逃離的事情是什麼？", options: [{ text: "努力卻總是白做工，想大喊「今天不想努力了」。", score: 1 }, { text: "在人群中顯得平庸，沒有獨特的眼光。", score: 2 }, { text: "害怕隨著時間流逝會漸漸失去身邊的好朋友。", score: 3 }]}
 ]
 
-// 5. 結果判定邏輯
+// 5. 結果判定
 const resultData = computed(() => {
   const s = totalScore.value
   if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，你只想把自己捲成一顆球。", guide: "適合不需費心準備、輕鬆易飲的酒款。" }
@@ -228,13 +169,11 @@ const resultData = computed(() => {
 // 6. 互動方法
 const handleShare = async () => {
   playClickSound();
-
   const shareData = {
     title: '我的微醺精靈人格',
     text: `我在【尋找台灣特有種微醺精靈】測驗中，測出了我是「${resultData.value.title}－${resultData.value.animal}」！你也快來測測看吧！`,
     url: window.location.href
   };
-
   try {
     if (navigator.share) {
       await navigator.share(shareData);
@@ -242,144 +181,74 @@ const handleShare = async () => {
       await navigator.clipboard.writeText(`${shareData.text} 測驗連結：${shareData.url}`);
       alert("連結已複製到剪貼簿，快發給好友吧！");
     }
-  } catch (err) {
-    console.log('分享失敗:', err);
-  }
+  } catch (err) { console.log('分享失敗:', err); }
 };
 
-const handleOpenAgeModal = () => { 
-  playClickSound(); 
-  isAgeModalOpen.value = true; 
-}
-
+const handleOpenAgeModal = () => { playClickSound(); isAgeModalOpen.value = true; }
 const handleConfirmAge = () => { 
-  playClickSound();
-  isAgeModalOpen.value = false; 
-  step.value = 'quiz';
-  if (!isMuted.value) {
-    bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
-  }
+  playClickSound(); isAgeModalOpen.value = false; step.value = 'quiz';
+  if (!isMuted.value) { bgm.play().catch(()=>{}); }
 }
-
-const handleAlertUnderage = () => { 
-  playClickSound();
-  alert("未滿 18 歲請勿飲酒。"); 
-}
-
+const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿飲酒。"); }
 const handleOptionClick = (score) => {
-  playClickSound();
-  totalScore.value += score
-  if (currentQuestion.value < questions.length - 1) {
-    currentQuestion.value++
-  } else {
-    step.value = 'loading'
-    setTimeout(() => { step.value = 'result' }, 3000) 
-  }
+  playClickSound(); totalScore.value += score;
+  if (currentQuestion.value < questions.length - 1) { currentQuestion.value++; } 
+  else { step.value = 'loading'; setTimeout(() => { step.value = 'result' }, 3000); }
 }
-
 const handleReset = () => { 
-  playClickSound();
-  step.value = 'start-page'; 
-  currentQuestion.value = 0; 
-  totalScore.value = 0; 
-  bgm.pause(); 
-  bgm.currentTime = 0;
+  playClickSound(); step.value = 'start-page'; currentQuestion.value = 0; totalScore.value = 0; bgm.pause(); bgm.currentTime = 0;
 }
-
-const handleGoToStore = () => { 
-  playClickSound();
-  window.location.href = "https://your-official-site.com" 
-}
+const handleGoToStore = () => { playClickSound(); window.location.href = "https://your-official-site.com"; }
 </script>
 
 <style scoped>
 .container { 
-  max-width: 400px; 
-  margin: 0 auto; 
-  min-height: 100vh; 
-  background: #fdf5e6; 
-  padding: 20px; 
-  box-sizing: border-box; 
-  position: relative; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
+  padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;
 }
 
-/* 按鈕共用樣式 */
-/* 修改原本的 .btn，加上 flex 屬性讓圖文並排 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+/* 按鈕共用樣式 (加入 flex 排版讓圖文對齊) */
+.btn { 
+  background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; 
+  width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+}
+.btn:active { transform: scale(0.98); }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
 
-
-/* 🌟 新增：按鈕內小圖示的尺寸控制 */
-.btn-icon {
-  width: 22px; /* 可依據實際視覺效果微調大小 */
-  height: 22px;
-  object-fit: contain;
+/* 🌟 【修正1】還原測驗選項按鈕的美觀樣式 */
+.btn-option { 
+  display: block; width: 100%; padding: 18px 20px; margin: 12px 0; 
+  border: 2px solid #eee; border-radius: 15px; background: white; 
+  text-align: left; font-size: 15px; cursor: pointer; transition: all 0.3s ease; 
+  color: #444; line-height: 1.4;
+}
+.btn-option:hover, .btn-option:active { 
+  background: #fff8f0; border-color: #8b4513; color: #8b4513;
 }
 
-/* 分享按鈕維持原本的顏色設定即可 */
-.btn-share {
-  background: #d2691e; 
-  margin-top: 20px;
-}
-.btn-share:hover {
-  background: #a0522d;
-}
+/* 分享按鈕與重新測驗 */
+.btn-share { background: #d2691e; margin-top: 20px; }
+.btn-share:hover { background: #a0522d; }
+.btn-icon { width: 22px; height: 22px; object-fit: contain; }
 
-/* 音量按鈕樣式 */
-.btn-mute {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #8b4513;
-  color: #8b4513;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+.btn-reset { 
+  background: none; border: none; color: #888; text-decoration: underline; 
+  cursor: pointer; margin: 15px auto; font-size: 14px; display: block;
 }
 
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
+.btn-mute { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); border: 1px solid #8b4513; color: #8b4513; padding: 8px 12px; border-radius: 20px; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
-.quiz-page-card { margin-top: 0px; }
-
-/* 封面樣式 */
-.cover-visual { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; }
+.card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 100%; box-sizing: border-box; }
+.main-title { font-size: 26px; line-height: 1.8; color: #8b4513; margin: 20px 0; }
+.cover-visual { width: 100%; height: 250px; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
-.cover-content h1 { font-size: 24px; color: #8b4513; margin: 20px 0; line-height: 1.4; }
-.cover-content p { color: #666; margin-bottom: 10px; }
-
-/* 彈窗樣式 */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.modal-card { background: white; width: 80%; max-width: 320px; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-.modal-card h2 { color: #8b4513; margin-bottom: 15px;}
-.modal-card p { line-height: 1.5; color: #444; }
-
-/* 進度條與動畫 */
 .progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
-.progress { background: #8b4513; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-
-/* 載入動畫與影片 */
-.loading-card { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
-.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
 .loading-video { width: 100%; height: 100%; object-fit: cover; }
-
-/* 結果頁樣式 */
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
 .spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
@@ -387,26 +256,9 @@ const handleGoToStore = () => {
 .spirit-animal { font-size: 20px; color: #d2691e; margin-bottom: 15px; font-weight: bold; }
 .description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
 .guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; line-height: 1.5; color: #444;}
-.btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; font-size: 14px;}
 .legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
-
-/* Vue Transition 動畫樣式 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+.modal-card { background: white; width: 85%; padding: 30px; border-radius: 20px; text-align: center; }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
