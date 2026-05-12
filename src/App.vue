@@ -308,23 +308,9 @@ const handleGoToStore = () => {
 
 /* 按鈕共用樣式 */
 /* 修改原本的 .btn，加上 flex 屬性讓圖文並排 */
-.btn { 
-  background: #8b4513; 
-  color: white; 
-  border: none; 
-  padding: 15px; 
-  border-radius: 30px; 
-  width: 100%; 
-  font-size: 16px; 
-  font-weight: bold; 
-  cursor: pointer; 
-  margin-top: 15px; 
-  /* 以下為新增的 flex 排版 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* 圖示與文字的間距 */
-}
+.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+.btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
+
 
 /* 🌟 新增：按鈕內小圖示的尺寸控制 */
 .btn-icon {
