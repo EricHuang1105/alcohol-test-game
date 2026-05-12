@@ -61,10 +61,16 @@
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         
         <button @click="handleShare" class="btn btn-share">
-          ➤ 分享結果，尋找你的同好
-        </button>
+  <img :src="shareIcon" alt="分享" class="btn-icon">
+  分享結果，尋找你的同好
+</button>
 
-        <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
+<button @click="handleReset" class="btn-reset">重新測驗</button>
+
+<button @click="handleGoToStore" class="btn">
+  <img :src="giftIcon" alt="禮物" class="btn-icon">
+  為你的精靈訂製專屬禮物
+</button>
 
         </div>
 
@@ -97,6 +103,11 @@ import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
 import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
+// ... 原本的匯入 ...
+import bgmFile from './assets/bgm.mp3'
+import clickFile from './assets/click.mp3'
+import shareIcon from './assets/icon-share.png'
+import giftIcon from './assets/icon-gift.png'
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
 
@@ -298,20 +309,37 @@ const handleGoToStore = () => {
 }
 
 /* 按鈕共用樣式 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-.btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; font-size: 15px; cursor: pointer; }
-
-/* 分享按鈕專屬樣式 */
-.btn-share {
-  background: #d2691e; 
-  margin-top: 20px;
+/* 修改原本的 .btn，加上 flex 屬性讓圖文並排 */
+.btn { 
+  background: #8b4513; 
+  color: white; 
+  border: none; 
+  padding: 15px; 
+  border-radius: 30px; 
+  width: 100%; 
+  font-size: 16px; 
+  font-weight: bold; 
+  cursor: pointer; 
+  margin-top: 15px; 
+  /* 以下為新增的 flex 排版 */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px; /* 圖示與文字的間距 */
 }
 
+/* 🌟 新增：按鈕內小圖示的尺寸控制 */
+.btn-icon {
+  width: 22px; /* 可依據實際視覺效果微調大小 */
+  height: 22px;
+  object-fit: contain;
+}
+
+/* 分享按鈕維持原本的顏色設定即可 */
+.btn-share {
+  background: #d2691e; 
+  margin-top: 20px;
+}
 .btn-share:hover {
   background: #a0522d;
 }
