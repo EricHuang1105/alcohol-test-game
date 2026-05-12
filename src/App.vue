@@ -46,27 +46,27 @@
         <p>茶梅小精靈正在調製專屬配方...</p>
       </div>
 
-      <div v-else-if="step === 'result'" class="card result-card">
+     <div v-else-if="step === 'result'" class="card result-card">
         <p class="result-pre">你的微醺人格是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
-        
         <div class="result-visual">
           <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
         </div>
-
         <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
         <p class="description">{{ resultData.desc }}</p>
         <div class="guide">
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
         
+        <button @click="handleReset" class="btn-reset">重新測驗</button>
+        
         <button @click="handleShare" class="btn btn-share">
-          📤 分享結果，尋找你的同好
+          ➤ 分享結果，尋找你的同好
         </button>
 
-        <button @click="handleReset" class="btn-reset">重新測驗</button>
         <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
-      </div>
+
+        </div>
 
     </Transition>
 
