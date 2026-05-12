@@ -12,7 +12,7 @@
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
         </div>
         <div class="cover-content">
-          <h1 class="main-title">尋找你的<br>台灣特有種微醺精靈</h1>
+          <h1 class="main-title">尋找你的微醺精靈</h1>
           <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
           <button @click="handleOpenAgeModal" class="btn">開始測驗</button>
         </div>
@@ -171,7 +171,7 @@ const handleShare = async () => {
   playClickSound();
   const shareData = {
     title: '我的微醺精靈人格',
-    text: `我在【尋找台灣特有種微醺精靈】測驗中，測出了我是「${resultData.value.title}－${resultData.value.animal}」！你也快來測測看吧！`,
+    text: `我在【尋找你的微醺精靈】 中，測出了我是「${resultData.value.title}－${resultData.value.animal}」！你也快來測測看吧！`,
     url: window.location.href
   };
   try {
