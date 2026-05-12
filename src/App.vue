@@ -1,12 +1,10 @@
 <template>
   <div id="app" class="container">
     
-    <!-- 右上角音量控制按鈕 -->
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
       {{ isMuted ? '🔇' : '🔊' }}
     </button>
     
-    <!-- 加入 Transition 讓頁面切換有淡入淡出效果 -->
     <Transition name="fade" mode="out-in">
       
       <div v-if="step === 'start-page'" class="card cover-card">
@@ -39,7 +37,6 @@
       </div>
 
       <div v-else-if="step === 'loading'" class="card loading-card">
-        <!-- 替換為 MP4 影片，使用 autoplay loop muted playsinline 確保手機能自動靜音播放 -->
         <div class="video-container">
           <video autoplay loop muted playsinline class="loading-video">
             <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
@@ -48,16 +45,6 @@
         </div>
         <p>茶梅小精靈正在調製專屬配方...</p>
       </div>
-
-
-<div v-else-if="step === 'result'" class="card result-card">
-  <button @click="handleShare" class="btn btn-share">
-    📤 分享結果，尋找你的同好
-  </button>
-
-  <button @click="handleReset" class="btn-reset">重新測驗</button>
-  <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
-</div>
 
       <div v-else-if="step === 'result'" class="card result-card">
         <p class="result-pre">你的微醺人格是</p>
@@ -72,13 +59,17 @@
         <div class="guide">
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
+        
+        <button @click="handleShare" class="btn btn-share">
+          📤 分享結果，尋找你的同好
+        </button>
+
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
       </div>
 
     </Transition>
 
-    <!-- 年齡確認彈窗 (獨立於主流程之外) -->
     <Transition name="modal">
       <div v-if="isAgeModalOpen" class="modal-overlay">
         <div class="modal-card">
@@ -117,8 +108,7 @@ const currentQuestion = ref(0)
 const totalScore = ref(0)
 const isMuted = ref(false)
 
-// 3. 音效與 BGM 設定 (使用 Pixabay 免費商用音源)
-// 使用匯入的路徑建立音訊物件
+// 3. 音效與 BGM 設定
 const bgm = new Audio(bgmFile)
 bgm.loop = true
 bgm.volume = 0.2 // 設定適中的背景音量
@@ -134,8 +124,7 @@ onMounted(() => {
 
 const playClickSound = () => {
   if (!isMuted.value) {
-    // 解決部分瀏覽器音效重疊不播的問題
-    const soundClone = clickSound.cloneNode(true) // 克隆一個實體來播放
+    const soundClone = clickSound.cloneNode(true) 
     soundClone.volume = 1.0
     soundClone.play().catch(e => console.log("音效播放失敗:", e))
   }
@@ -144,7 +133,6 @@ const playClickSound = () => {
 const toggleMute = () => {
   isMuted.value = !isMuted.value
   bgm.muted = isMuted.value
-  // 如果解除靜音且正在測驗中，啟動 BGM
   if (!isMuted.value && step.value !== 'start-page') {
     bgm.play().catch(() => {})
   }
@@ -171,17 +159,17 @@ const questions = [
   { 
     text: "Q3. 難得的週末到來，你最喜歡的放鬆行程是？", 
     options: [
-      { text: "獨自窩在房間看小說或發呆。", score: 1 }, // 企劃書標示為 1 分
-      { text: "穿上極具個人風格的服飾去逛街。", score: 2 }, // 企劃書標示為 2 分
-      { text: "找三五好友聚在一起大聊特聊。", score: 3 }  // 企劃書標示為 3 分
+      { text: "獨自窩在房間看小說或發呆。", score: 1 }, 
+      { text: "穿上極具個人風格的服飾去逛街。", score: 2 }, 
+      { text: "找三五好友聚在一起大聊特聊。", score: 3 }  
     ]
   },
   { 
     text: "Q4. 當你在路上被陌生人稱讚你的穿搭，你的反應是？", 
     options: [
-      { text: "覺得有點不自在，想趕快結束對話。", score: 1 }, // 企劃書標示為 1 分
-      { text: "內心超開心，覺得遇到了懂生活的同好。", score: 2 }, // 企劃書標示為 2 分
-      { text: "表面淡定的說謝謝，心裡早就高興到飛起。", score: 3 } // 企劃書標示為 3 分
+      { text: "覺得有點不自在，想趕快結束對話。", score: 1 }, 
+      { text: "內心超開心，覺得遇到了懂生活的同好。", score: 2 }, 
+      { text: "表面淡定的說謝謝，心裡早就高興到飛起。", score: 3 } 
     ]
   },
   { 
@@ -195,9 +183,9 @@ const questions = [
   { 
     text: "Q6. 對你來說，「享受微醺」最大的意義是什麼？", 
     options: [
-      { text: "讓內心透透氣，把平常累積的壓力指數歸零。", score: 1 }, // 企劃書標示為 1 分
-      { text: "是給靈魂的獎賞，撫平趕報告或工作後的焦慮。", score: 2 }, // 企劃書標示為 2 分
-      { text: "用來「暖機」自己，說出平時不敢說的真心話。", score: 3 } // 企劃書標示為 3 分
+      { text: "讓內心透透氣，把平常累積的壓力指數歸零。", score: 1 }, 
+      { text: "是給靈魂的獎賞，撫平趕報告或工作後的焦慮。", score: 2 }, 
+      { text: "用來「暖機」自己，說出平時不敢說的真心話。", score: 3 } 
     ]
   },
   { 
@@ -217,6 +205,7 @@ const questions = [
     ]
   }
 ]
+
 // 5. 結果判定邏輯
 const resultData = computed(() => {
   const s = totalScore.value
@@ -227,8 +216,7 @@ const resultData = computed(() => {
   return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面裝淡定，內心很需要陪伴。", guide: "適合與三五好友分享、能快速打開話匣子的派對酒款。" }
 })
 
-// 6. 互動方法 (加入音效觸發)
-
+// 6. 互動方法
 const handleShare = async () => {
   playClickSound();
 
@@ -239,11 +227,9 @@ const handleShare = async () => {
   };
 
   try {
-    // 檢查瀏覽器是否支援 Web Share API (通常是手機端)
     if (navigator.share) {
       await navigator.share(shareData);
     } else {
-      // 電腦端或不支援時，改用複製連結
       await navigator.clipboard.writeText(`${shareData.text} 測驗連結：${shareData.url}`);
       alert("連結已複製到剪貼簿，快發給好友吧！");
     }
@@ -251,7 +237,6 @@ const handleShare = async () => {
     console.log('分享失敗:', err);
   }
 };
-
 
 const handleOpenAgeModal = () => { 
   playClickSound(); 
@@ -262,7 +247,6 @@ const handleConfirmAge = () => {
   playClickSound();
   isAgeModalOpen.value = false; 
   step.value = 'quiz';
-  // 在使用者第一次互動(確認年齡)後，才正式啟動背景音樂
   if (!isMuted.value) {
     bgm.play().catch(err => console.log('BGM播放被阻擋:', err));
   }
@@ -280,7 +264,7 @@ const handleOptionClick = (score) => {
     currentQuestion.value++
   } else {
     step.value = 'loading'
-    setTimeout(() => { step.value = 'result' }, 3000) // 為了讓過場影片播久一點，我將時間延長到3秒
+    setTimeout(() => { step.value = 'result' }, 3000) 
   }
 }
 
@@ -289,13 +273,12 @@ const handleReset = () => {
   step.value = 'start-page'; 
   currentQuestion.value = 0; 
   totalScore.value = 0; 
-  bgm.pause(); // 回到首頁時先暫停音樂
+  bgm.pause(); 
   bgm.currentTime = 0;
 }
 
 const handleGoToStore = () => { 
   playClickSound();
-  // TODO: 上線前記得替換為真實連結
   window.location.href = "https://your-official-site.com" 
 }
 </script>
@@ -314,13 +297,12 @@ const handleGoToStore = () => {
   justify-content: center;
 }
 
-<style scoped>
-/* ... (前面是你原本寫好的其他樣式) ... */
-
+/* 按鈕共用樣式 */
 .btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
+.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; font-size: 15px; cursor: pointer; }
 
-/* 🌟 請將分享按鈕的樣式貼在這個位置 🌟 */
+/* 分享按鈕專屬樣式 */
 .btn-share {
   background: #d2691e; 
   margin-top: 20px;
@@ -333,12 +315,6 @@ const handleGoToStore = () => {
 .btn-share:hover {
   background: #a0522d;
 }
-/* 🌟 分享按鈕樣式結束 🌟 */
-
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; font-size: 15px; cursor: pointer; }
-
-/* ... (後面是其他的進度條、彈窗等樣式) ... */
-</style>
 
 /* 音量按鈕樣式 */
 .btn-mute {
@@ -380,13 +356,6 @@ const handleGoToStore = () => {
 .modal-card h2 { color: #8b4513; margin-bottom: 15px;}
 .modal-card p { line-height: 1.5; color: #444; }
 
-/* 按鈕樣式 */
-.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.2s; font-weight: bold;}
-.btn:active { transform: scale(0.98); }
-.btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
-.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 15px; transition: 0.3s; color: #333; line-height: 1.4;}
-.btn-option:hover, .btn-option:active { background: #fff8f0; border-color: #8b4513; }
-
 /* 進度條與動畫 */
 .progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
 .progress { background: #8b4513; height: 100%; border-radius: 4px; transition: width 0.4s ease; }
@@ -409,7 +378,7 @@ const handleGoToStore = () => {
 .btn-reset { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; margin-top: 20px; font-size: 14px;}
 .legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
 
-/* --- Vue Transition 動畫樣式 --- */
+/* Vue Transition 動畫樣式 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
