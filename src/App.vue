@@ -49,6 +49,16 @@
         <p>茶梅小精靈正在調製專屬配方...</p>
       </div>
 
+
+<div v-else-if="step === 'result'" class="card result-card">
+  <button @click="handleShare" class="btn btn-share">
+    📤 分享結果，尋找你的同好
+  </button>
+
+  <button @click="handleReset" class="btn-reset">重新測驗</button>
+  <button @click="handleGoToStore" class="btn">為你的精靈訂製專屬禮物</button>
+</div>
+
       <div v-else-if="step === 'result'" class="card result-card">
         <p class="result-pre">你的微醺人格是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
@@ -218,6 +228,31 @@ const resultData = computed(() => {
 })
 
 // 6. 互動方法 (加入音效觸發)
+
+const handleShare = async () => {
+  playClickSound();
+
+  const shareData = {
+    title: '我的微醺精靈人格',
+    text: `我在【尋找台灣特有種微醺精靈】測驗中，測出了我是「${resultData.value.title}－${resultData.value.animal}」！你也快來測測看吧！`,
+    url: window.location.href
+  };
+
+  try {
+    // 檢查瀏覽器是否支援 Web Share API (通常是手機端)
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      // 電腦端或不支援時，改用複製連結
+      await navigator.clipboard.writeText(`${shareData.text} 測驗連結：${shareData.url}`);
+      alert("連結已複製到剪貼簿，快發給好友吧！");
+    }
+  } catch (err) {
+    console.log('分享失敗:', err);
+  }
+};
+
+
 const handleOpenAgeModal = () => { 
   playClickSound(); 
   isAgeModalOpen.value = true; 
@@ -278,6 +313,32 @@ const handleGoToStore = () => {
   flex-direction: column;
   justify-content: center;
 }
+
+<style scoped>
+/* ... (前面是你原本寫好的其他樣式) ... */
+
+.btn { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+.btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
+
+/* 🌟 請將分享按鈕的樣式貼在這個位置 🌟 */
+.btn-share {
+  background: #d2691e; 
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-share:hover {
+  background: #a0522d;
+}
+/* 🌟 分享按鈕樣式結束 🌟 */
+
+.btn-option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; background: white; text-align: left; font-size: 15px; cursor: pointer; }
+
+/* ... (後面是其他的進度條、彈窗等樣式) ... */
+</style>
 
 /* 音量按鈕樣式 */
 .btn-mute {
