@@ -108,8 +108,6 @@ import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
 import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
-import bgmFile from './assets/bgm.mp3'
-import clickFile from './assets/click.mp3'
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
