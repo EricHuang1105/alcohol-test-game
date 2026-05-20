@@ -38,11 +38,9 @@
 
       <div v-else-if="step === 'loading'" class="card loading-card">
         <div class="video-container">
-          <video autoplay loop muted playsinline class="loading-video">
-            <source src="https://cdn.pixabay.com/video/2023/10/22/186121-877478052_tiny.mp4" type="video/mp4">
-          </video>
+          <img :src="loadingWebp" class="loading-video" alt="茶梅妹調酒中">
         </div>
-        <p>茶梅妹正在調製專屬配方...</p>
+        <p class="loading-text">茶梅妹正在調製專屬配方...</p>
       </div>
 
       <div v-else-if="step === 'result'" class="card result-card">
@@ -106,6 +104,7 @@ import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
+import loadingWebp from './assets/chamei_shake.webp'
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
@@ -247,8 +246,18 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-.video-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 20px; border: 4px solid #fdf5e6; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
-.loading-video { width: 100%; height: 100%; object-fit: cover; }
+.video-container { width: 150px; height: 150px; margin: 0 auto 20px; background: transparent;}
+.loading-video { width: 100%; height: 100%; object-fit: contain; }
+.loading-text {
+  color: #8b4513;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
 .spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
