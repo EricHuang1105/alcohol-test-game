@@ -44,7 +44,7 @@
           <span 
             v-for="(char, index) in '茶梅妹正在為你調配命定酒款...'" 
             :key="index" 
-            :style="{ 'animation-delay': `${index * 0.08}s` }"
+            :style="{ 'animation-delay': `${index * 0.15}s` }"
           >
             {{ char }}
           </span>
