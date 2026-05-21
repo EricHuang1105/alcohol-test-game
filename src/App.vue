@@ -38,7 +38,7 @@
 
       <div v-else-if="step === 'loading'" class="card loading-card">
         <div class="video-container">
-          <img :src="loadingmp4" class="loading-video" alt="茶梅妹調酒中">
+          <img :src="loadingWebp" class="loading-video" alt="茶梅妹調酒中">
         </div>
         <p class="loading-text">茶梅妹正在調製專屬配方...</p>
       </div>
@@ -104,7 +104,7 @@ import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
-import loadingmp4 from './assets/chamei_shake.mp4'
+import loadingWebp from './assets/chamei_shake.webp'
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
