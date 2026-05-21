@@ -246,8 +246,24 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-.video-container { width: 100%; height: 250px; margin: 0 auto 20px; background: transparent; }
-.loading-video { width: 100%; height: 100%; object-fit: contain; transform: scale(1.2); }
+.video-container { 
+  width: 100%;          
+  height: 250px;        
+  margin: 0 auto 20px; 
+  background: white;     /* 與卡片背景同色 */
+  border-radius: 15px;   /* 必須加上這行，跟封面圖的圓角一致 */
+  overflow: hidden;      /* 隱藏超出邊界的精靈，確保邊緣乾淨 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading-video { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain;  /* 保持精靈不被變形 */
+  /* 如果覺得精靈在中間還是太小，可以微調下面這行 */
+  transform: scale(1.1); 
+}
 .loading-text {
   color: #8b4513;
   letter-spacing: 1px;
