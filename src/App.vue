@@ -246,8 +246,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
-.video-container { width: 150px; height: 150px; margin: 0 auto 20px; background: transparent;}
-.loading-video { width: 100%; height: 100%; object-fit: contain; }
+.video-container { width: 100%; height: 250px; margin: 0 auto 20px; background: transparent; }
+.loading-video { width: 100%; height: 100%; object-fit: contain; transform: scale(1.2); }
 .loading-text {
   color: #8b4513;
   letter-spacing: 1px;
