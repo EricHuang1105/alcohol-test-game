@@ -279,19 +279,28 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   font-weight: bold;
 }
 
-/* 設定每個字元的獨立樣式 */
 .loading-text span {
-  display: inline-block; /* 必須設定 inline-block 才能上下移動 */
-  animation: wave 1.2s infinite ease-in-out;
+  display: inline-block;
+  animation: bounce 1.5s infinite;
+  transform-origin: bottom; /* 將變形重心放在底部，落地才會自然 */
 }
 
-/* 波浪上下跳動的軌跡 */
-@keyframes wave {
-  0%, 100% { 
-    transform: translateY(0px); 
+/* 帶有物理頓挫與 Q 彈感的彈跳軌跡 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
   }
-  50% { 
-    transform: translateY(-8px); /* 數字越大，字跳得越高 */
+  15% {
+    transform: translateY(-12px) scaleY(1.1); /* 往上彈起，並因為速度稍微拉長 */
+  }
+  30% {
+    transform: translateY(0) scaleY(0.85);    /* 重重落地，稍微受到擠壓變扁 */
+  }
+  40% {
+    transform: translateY(-3px) scaleY(1.05); /* 落地後的小幅度餘震反彈 */
+  }
+  50%, 100% {
+    transform: translateY(0) scaleY(1);       /* 停留在原地，等待下一次循環 */
   }
 }
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
