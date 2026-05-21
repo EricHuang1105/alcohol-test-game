@@ -281,7 +281,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 
 .loading-text span {
   display: inline-block;
-  animation: sequentialBounce 3s infinite;
+  animation: sequentialBounce 2.5s infinite;
   transform-origin: bottom; /* 將變形重心放在底部，落地才會自然 */
 }
 
