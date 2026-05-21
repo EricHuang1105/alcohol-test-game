@@ -40,7 +40,15 @@
         <div class="video-container">
           <video src="/chamei_shake.mp4" autoplay loop muted playsinline preload="auto" class="loading-video"></video>
         </div>
-        <p class="loading-text">茶梅妹正在為你調配命定酒款...</p>
+        <p class="loading-text">
+          <span 
+            v-for="(char, index) in '茶梅妹正在為你調配命定酒款...'" 
+            :key="index" 
+            :style="{ 'animation-delay': `${index * 0.08}s` }"
+          >
+            {{ char }}
+          </span>
+        </p>
       </div>
 
       <div v-else-if="step === 'result'" class="card result-card">
@@ -266,13 +274,25 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 }
 .loading-text {
   color: #8b4513;
-  letter-spacing: 1px;
-  animation: pulse 1.5s infinite ease-in-out;
+  letter-spacing: 2px;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+/* 設定每個字元的獨立樣式 */
+.loading-text span {
+  display: inline-block; /* 必須設定 inline-block 才能上下移動 */
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+/* 波浪上下跳動的軌跡 */
+@keyframes wave {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-8px); /* 數字越大，字跳得越高 */
+  }
 }
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
