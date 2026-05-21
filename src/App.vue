@@ -44,7 +44,7 @@
           <span 
             v-for="(char, index) in '茶梅妹正在為你調配命定酒款...'" 
             :key="index" 
-            :style="{ 'animation-delay': `${index * 0.30}s` }"
+            :style="{ 'animation-delay': `${index * 0.15}s` }"
           >
             {{ char }}
           </span>
@@ -281,23 +281,23 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 
 .loading-text span {
   display: inline-block;
-  animation: bounce 1.5s infinite;
+  animation: sequentialBounce 3s infinite;
   transform-origin: bottom; /* 將變形重心放在底部，落地才會自然 */
 }
 
-/* 帶有物理頓挫與 Q 彈感的彈跳軌跡 */
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0) scaleY(1);
+/* 獨立接力彈跳軌跡 */
+@keyframes sequentialBounce {
+  0% {
+    transform: translateY(0);
   }
-  15% {
-    transform: translateY(-12px); /* 單純往上跳，不變形 */
+  5% {
+    transform: translateY(-12px); /* 跳到最高點 */
   }
-  30% {
-    transform: translateY(0);    /* 單純落地 */
+  10% {
+    transform: translateY(0);     /* 迅速落地 */
   }
-  50%, 100% {
-    transform: translateY(0);       /* 停留在原地，等待下一次循環 */
+  100% {
+    transform: translateY(0);     /* 剩下的 90% 時間全部待在原地不動，等其他字跳完 */
   }
 }
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
