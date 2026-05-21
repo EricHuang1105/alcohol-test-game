@@ -44,7 +44,7 @@
           <span 
             v-for="(char, index) in '茶梅妹正在為你調配命定酒款...'" 
             :key="index" 
-            :style="{ 'animation-delay': `${index * 0.15}s` }"
+            :style="{ 'animation-delay': `${index * 0.30}s` }"
           >
             {{ char }}
           </span>
@@ -295,9 +295,6 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   }
   30% {
     transform: translateY(0);    /* 單純落地 */
-  }
-  40% {
-    transform: translateY(-3px); /*  落地後的輕微小反彈 */
   }
   50%, 100% {
     transform: translateY(0);       /* 停留在原地，等待下一次循環 */
