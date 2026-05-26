@@ -13,10 +13,7 @@
         </div>
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
-          <p>
-  探尋內心深處的靈魂<br>
-  調製專屬於你的特調
-</p>
+          <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
           <button @click="handleOpenAgeModal" class="btn">開始測驗</button>
         </div>
       </div>
@@ -213,6 +210,16 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 
 <style scoped>
 
+.cover-content p {
+  font-size: 15px;      /* 稍微縮小一點點，確保在一行內不會溢出 */
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.6;
+  white-space: nowrap;  /* 強制不換行 */
+  overflow: hidden;     /* 隱藏溢出 */
+  text-overflow: ellipsis; /* 如果手機真的太小塞不下，最後會變成 ... */
+  padding: 0 10px;      /* 左右留一點呼吸空間 */
+}
 
 .container { 
   max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
