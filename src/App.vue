@@ -211,7 +211,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 <style scoped>
 
 .cover-content p {
-  font-size: 10px;      /* 稍微縮小一點點，確保在一行內不會溢出 */
+  font-size: 13px;      /* 稍微縮小一點點，確保在一行內不會溢出 */
   color: #555;
   margin-bottom: 25px;
   line-height: 1.6;
