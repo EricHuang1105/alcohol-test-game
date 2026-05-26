@@ -213,11 +213,6 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 
 <style scoped>
 
-.cover-content p {
-  line-height: 1.8; /* 增加行距，讓兩行文字呼吸感更好 */
-  color: #555;      /* 稍微調淡一點顏色，讓標題更突出 */
-  margin-bottom: 25px;
-}
 
 .container { 
   max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
