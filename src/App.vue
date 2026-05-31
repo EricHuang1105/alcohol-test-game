@@ -10,6 +10,12 @@
       <div v-if="step === 'start-page'" class="card cover-card">
         <div class="cover-visual">
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
+          
+          <img :src="animalCivet" alt="白鼻心" class="kv-animal civet">
+          <img :src="animalPangolin" alt="穿山甲" class="kv-animal pangolin">
+          <img :src="animalSquirrel" alt="白面鼯鼠" class="kv-animal squirrel">
+          <img :src="animalLeopardCat" alt="石虎" class="kv-animal leopard-cat">
+          <img :src="animalMagpie" alt="台灣藍鵲" class="kv-animal magpie">
         </div>
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
@@ -113,6 +119,13 @@ import giftIcon from './assets/icon-gift.png'
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
 
+// 🌟 補上這五行：按照正確出場順序匯入首頁動物圖
+import animalCivet from './assets/home_civet.png'              // 1. 白鼻心
+import animalPangolin from './assets/home_pangolin.png'        // 2. 穿山甲
+import animalSquirrel from './assets/home_squirrel.png'        // 3. 白面鼯鼠
+import animalLeopardCat from './assets/home_leopard.png'       // 4. 石虎 (注意對齊你資料夾的檔名 home_leopard.png)
+import animalMagpie from './assets/home_magpie.png'            // 5. 台灣藍鵲
+
 
 // 2. 狀態管理
 const coverImage = ref(coverImageFile)
@@ -209,21 +222,21 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 </script>
 
 <style scoped>
+.container { 
+  max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
+  padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;
+}
 
+/* 封面副標題設定 */
 .cover-content p {
-  font-size: 13px;      /* 稍微縮小一點點，確保在一行內不會溢出 */
+  font-size: 13px;      
   color: #555;
   margin-bottom: 25px;
   line-height: 1.6;
   white-space: nowrap;  /* 強制不換行 */
   overflow: hidden;     /* 隱藏溢出 */
-  text-overflow: ellipsis; /* 如果手機真的太小塞不下，最後會變成 ... */
-  padding: 0 10px;      /* 左右留一點呼吸空間 */
-}
-
-.container { 
-  max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
-  padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;
+  text-overflow: ellipsis; 
+  padding: 0 10px;      
 }
 
 /* 按鈕共用樣式 (加入 flex 排版讓圖文對齊) */
@@ -235,7 +248,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .btn:active { transform: scale(0.98); }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
 
-/* 🌟 【修正1】還原測驗選項按鈕的美觀樣式 */
+/* 測驗選項按鈕的美觀樣式 */
 .btn-option { 
   display: block; width: 100%; padding: 18px 20px; margin: 12px 0; 
   border: 2px solid #eee; border-radius: 15px; background: white; 
@@ -260,19 +273,97 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 
 .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 100%; box-sizing: border-box; }
 .main-title { font-size: 26px; line-height: 1.8; color: #8b4513; margin: 20px 0; }
-.cover-visual { width: 100%; height: 250px; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+
+/* 🌟 封面圖片容器（加入 position: relative 讓動物能絕對定位疊在上面） */
+.cover-visual { 
+  width: 100%; 
+  height: 250px; 
+  border-radius: 15px; 
+  overflow: hidden; 
+  margin-bottom: 20px; 
+  position: relative; 
+}
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
+
+/* 🌟 所有首頁動物的共用基礎設定與淡入動畫 */
+.kv-animal {
+  position: absolute;
+  object-fit: contain;
+  opacity: 0; /* 預設完全透明 */
+  animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後停在最後一格 */
+}
+
+/* 🌟 動物淡入與微放大跳出效果 */
+@keyframes animalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===================================================
+   🎯 五隻動物定位與出場時間（依你指定的順序）
+   (你可以在 Localhost 畫面下一邊觀看一邊自由修改 width / top / left 坐標)
+   =================================================== */
+
+/* 1. 白鼻心 (第一個出場) */
+.civet {
+  width: 60px;
+  left: 20px;
+  top: 50px;
+  animation-delay: 0.5s;
+}
+
+/* 2. 穿山甲 (第二個出場) */
+.pangolin {
+  width: 70px;
+  right: 20px;
+  top: 45px;
+  animation-delay: 1.0s;
+}
+
+/* 3. 白面鼯鼠 (第三個出場) */
+.squirrel {
+  width: 65px;
+  left: 15px;
+  bottom: 10px;
+  animation-delay: 1.5s;
+}
+
+/* 4. 石虎 (第四個出場) */
+.leopard-cat {
+  width: 75px;
+  right: 35px;
+  bottom: 5px;
+  animation-delay: 2.0s;
+}
+
+/* 5. 台灣藍鵲 (最後壓軸) */
+.magpie {
+  width: 65px;
+  left: 40px;
+  top: 15px;
+  animation-delay: 2.5s;
+}
+
+/* =================================================== */
+
 .progress-bar { background: #eee; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
 .progress { background: #8b4513; height: 100%; transition: width 0.4s ease; }
 .q-count { color: #888; font-size: 14px; margin-bottom: 20px; text-align: right;}
 .q-text { color: #333; margin-bottom: 20px; line-height: 1.5; font-size: 18px;}
+
 .video-container { 
   width: 100%;          
   height: 250px;        
   margin: 0 auto 20px; 
-  background: white;     /* 與卡片背景同色 */
-  border-radius: 15px;   /* 必須加上這行，跟封面圖的圓角一致 */
-  overflow: hidden;      /* 隱藏超出邊界的精靈，確保邊緣乾淨 */
+  background: white;     
+  border-radius: 15px;   
+  overflow: hidden;      
   display: flex;
   justify-content: center;
   align-items: center;
@@ -280,8 +371,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .loading-video { 
   width: 100%; 
   height: 100%; 
-  object-fit: contain;  /* 保持精靈不被變形 */
-  /* 如果覺得精靈在中間還是太小，可以微調下面這行 */
+  object-fit: contain;  
   transform: scale(1.1); 
 }
 .loading-text {
@@ -294,7 +384,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .loading-text span {
   display: inline-block;
   animation: sequentialBounce 2.5s infinite;
-  transform-origin: bottom; /* 將變形重心放在底部，落地才會自然 */
+  transform-origin: bottom; 
 }
 
 /* 獨立接力彈跳軌跡 */
@@ -303,15 +393,16 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
     transform: translateY(0);
   }
   5% {
-    transform: translateY(-12px); /* 跳到最高點 */
+    transform: translateY(-12px); 
   }
   10% {
-    transform: translateY(0);     /* 迅速落地 */
+    transform: translateY(0);     
   }
   100% {
-    transform: translateY(0);     /* 剩下的 90% 時間全部待在原地不動，等其他字跳完 */
+    transform: translateY(0);     
   }
 }
+
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
 .spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
