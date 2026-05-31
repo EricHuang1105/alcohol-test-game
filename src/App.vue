@@ -285,68 +285,54 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 }
 .kv-image { width: 100%; height: 100%; object-fit: cover; }
 
-/* 🌟 所有首頁動物的共用基礎設定與淡入動畫 */
+/* 🌟 【已修改】絕對座標對齊：強制所有去背小動物與封面圖圖層大小完全重疊 */
 .kv-animal {
   position: absolute;
-  object-fit: contain;
-  opacity: 0; /* 預設完全透明 */
-  animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後停在最後一格 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
+  opacity: 0;        /* 預設完全透明 */
+  animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後維持顯示 */
 }
 
-/* 🌟 動物淡入與微放大跳出效果 */
+/* 🌟 【已修改】純淡入動畫（拿掉形變，100% 還原您在 PS 設計好的大小比例） */
 @keyframes animalFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.8) translateY(10px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
   }
 }
 
 /* ===================================================
-   🎯 五隻動物定位與出場時間（依你指定的順序）
-   (你可以在 Localhost 畫面下一邊觀看一邊自由修改 width / top / left 坐標)
+   ⏰ 【已修改】只控制每隻動物的出場時間差（依您的順序）
    =================================================== */
 
-/* 1. 白鼻心 (第一個出場) */
+/* 1. 白鼻心 */
 .civet {
-  width: 60px;
-  left: 20px;
-  top: 50px;
   animation-delay: 0.5s;
 }
 
-/* 2. 穿山甲 (第二個出場) */
+/* 2. 穿山甲 */
 .pangolin {
-  width: 70px;
-  right: 20px;
-  top: 45px;
   animation-delay: 1.0s;
 }
 
-/* 3. 白面鼯鼠 (第三個出場) */
+/* 3. 白面鼯鼠 */
 .squirrel {
-  width: 65px;
-  left: 15px;
-  bottom: 10px;
   animation-delay: 1.5s;
 }
 
-/* 4. 石虎 (第四個出場) */
+/* 4. 石虎 */
 .leopard-cat {
-  width: 75px;
-  right: 35px;
-  bottom: 5px;
   animation-delay: 2.0s;
 }
 
-/* 5. 台灣藍鵲 (最後壓軸) */
+/* 5. 台灣藍鵲 */
 .magpie {
-  width: 65px;
-  left: 40px;
-  top: 15px;
   animation-delay: 2.5s;
 }
 
