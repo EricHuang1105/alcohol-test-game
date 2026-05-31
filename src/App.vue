@@ -347,7 +347,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   width: 100%;          
   height: 250px;        
   margin: 0 auto 20px; 
-  background: #000000;     
+  background: #ffffff;     
   border-radius: 15px;   
   overflow: hidden;      
   display: flex;
@@ -359,7 +359,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   height: 100%; 
   object-fit: contain;  
   transform: scale(1.1); 
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
 }
 .loading-text {
   color: #8b4513;
