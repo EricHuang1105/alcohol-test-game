@@ -283,7 +283,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   margin-bottom: 20px; 
   position: relative; 
 }
-.kv-image { width: 100%; height: 100%; object-fit: cover; }
+.kv-image { width: 100%; height: 100%; object-fit: contain; }
 
 /* 🌟 【已修改】絕對座標對齊：強制所有去背小動物與封面圖圖層大小完全重疊 */
 .kv-animal {
@@ -292,7 +292,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
+  object-fit: contain; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
   opacity: 0;        /* 預設完全透明 */
   animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後維持顯示 */
 }
