@@ -277,13 +277,13 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 🌟 封面圖片容器（加入 position: relative 讓動物能絕對定位疊在上面） */
 .cover-visual { 
   width: 100%; 
-  height: 250px; 
+  height: 290px; 
   border-radius: 15px; 
   overflow: hidden; 
   margin-bottom: 20px; 
   position: relative; 
 }
-.kv-image { width: 100%; height: 100%; object-fit: contain; }
+.kv-image { width: 100%; height: 100%; object-fit: cover; }
 
 /* 🌟 【已修改】絕對座標對齊：強制所有去背小動物與封面圖圖層大小完全重疊 */
 .kv-animal {
@@ -292,7 +292,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
+  object-fit: cover; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
   opacity: 0;        /* 預設完全透明 */
   animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後維持顯示 */
 }
