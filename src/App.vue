@@ -347,7 +347,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   width: 100%;          
   height: 250px;        
   margin: 0 auto 20px; 
-  background: #ffffff;     
+  background: #000000;     
   border-radius: 15px;   
   overflow: hidden;      
   display: flex;
