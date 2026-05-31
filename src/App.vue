@@ -389,9 +389,23 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   }
 }
 
+
+
 .result-pre { color: #666; font-size: 14px; margin-bottom: 5px; }
 .result-visual { width: 100%; max-width: 220px; margin: 0 auto 15px; }
-.spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); }
+.spirit-image { width: 100%; height: auto; filter: drop-shadow(0 5px 15px rgba(210,105,30,0.25)); animation: spiritFloat 3s infinite ease-in-out; }
+/* 🌟 定義靈魂漂浮與光芒呼吸的軌跡 */
+@keyframes spiritFloat {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 15px rgba(210, 105, 30, 0.25));
+  }
+  50% {
+    transform: translateY(-8px); /* 輕微往上飄移 */
+    /* 光芒在最高點時變亮、擴散 */
+    filter: drop-shadow(0 10px 25px rgba(210, 105, 30, 0.45)); 
+  }
+}
 .result-title { color: #8b4513; margin: 10px 0; font-size: 28px; }
 .spirit-animal { font-size: 20px; color: #d2691e; margin-bottom: 15px; font-weight: bold; }
 .description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
