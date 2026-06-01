@@ -20,7 +20,7 @@
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
           <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
-          <button @click="handleOpenAgeModal" class="btn">開始測驗</button>
+          <button @click="handleOpenAgeModal" class="btn btn-start-game">開始測驗</button>
         </div>
       </div>
 
@@ -295,6 +295,25 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   object-fit: cover; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
   opacity: 0;        /* 預設完全透明 */
   animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後維持顯示 */
+}
+
+/* 🌟 首頁「開始測驗」按鈕的延遲淡入設定 */
+.btn-start-game {
+  opacity: 0; /* 網頁一打開時預設完全隱形 */
+  /* 呼叫下面定義的 btnFadeIn 動畫：時長 0.8 秒，延遲 3.2 秒啟動，結束後維持顯示 (forwards) */
+  animation: btnFadeIn 0.8s ease-out 3.2s forwards;
+}
+
+/* 🌟 開始按鈕專用的淡入關鍵影格 */
+@keyframes btnFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px); /* 帶有一點點由下往上浮現的動態感 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 🌟 【已修改】純淡入動畫（拿掉形變，100% 還原您在 PS 設計好的大小比例） */
