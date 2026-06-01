@@ -164,11 +164,14 @@ onMounted(() => {
   clickSound.load()
 })
 
+// 🌟 刪除原本的，直接換成這段「零延遲」的秒開寫法
 const playClickSound = () => {
-  if (!isMuted.value) {
-    const soundClone = clickSound.cloneNode(true) 
-    soundClone.volume = 1.0
-    soundClone.play().catch(() => {})
+  if (!isMuted.value && clickSound) {
+    // 核心魔法 1：把播放進度強制拉回開頭（0秒），這樣連續狂點也不會卡住
+    clickSound.currentTime = 0; 
+    
+    // 核心魔法 2：直接播放本體，省去複製檔案（cloneNode）的硬體時間差
+    clickSound.play().catch(() => {});
   }
 }
 
