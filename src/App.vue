@@ -1,3 +1,6 @@
+<!-- 🌟 在網頁一打開就強迫瀏覽器先下載過場動畫，這樣到了 loading 頁就能秒開 -->
+<link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
+
 <template>
   <div id="app" class="container">
     
@@ -44,7 +47,16 @@
 
       <div v-else-if="step === 'loading'" class="card loading-card">
         <div class="video-container">
-          <video src="/chamei_shake.mp4" autoplay loop muted playsinline preload="auto" class="loading-video"></video>
+          <video 
+  src="/chamei_shake.mp4" 
+  autoplay 
+  loop 
+  muted 
+  playsinline 
+  preload="auto" 
+  :controls="false" 
+  class="loading-video"
+></video>
         </div>
         <p class="loading-text">
           <span 
@@ -107,7 +119,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 // 1. 匯入所有資源
-import coverImageFile from './assets/cover.png'
+import coverImageFile from './assets/cover.webp'
 import img1 from './assets/result_1.webp'
 import img2 from './assets/result_2.webp'
 import img3 from './assets/result_3.webp'
