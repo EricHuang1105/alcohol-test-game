@@ -300,8 +300,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 🌟 首頁「開始測驗」按鈕的延遲淡入設定 */
 .btn-start-game {
   opacity: 0; /* 網頁一打開時預設完全隱形 */
-  /* 呼叫下面定義的 btnFadeIn 動畫：時長 0.8 秒，延遲 3.2 秒啟動，結束後維持顯示 (forwards) */
-  animation: btnFadeIn 0.8s ease-out 3.2s forwards;
+  /* 呼叫下面定義的 btnFadeIn 動畫：時長 0.6 秒，延遲 3.0 秒啟動，結束後維持顯示 (forwards) */
+  animation: btnFadeIn 0.6s ease-out 3.0s forwards;
 }
 
 /* 🌟 開始按鈕專用的淡入關鍵影格 */
