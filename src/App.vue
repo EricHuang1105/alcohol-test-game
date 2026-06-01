@@ -437,7 +437,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
     transform: translateY(0);
   }
   5% {
-    transform: translateY(-6px); 
+    transform: translateY(-8px); 
   }
   10% {
     transform: translateY(0);     
