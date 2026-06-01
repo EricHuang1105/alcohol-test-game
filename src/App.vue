@@ -1,7 +1,7 @@
-<!-- 🌟 在網頁一打開就強迫瀏覽器先下載過場動畫，這樣到了 loading 頁就能秒開 -->
-<link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
-
 <template>
+
+<link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
+  
   <div id="app" class="container">
     
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
