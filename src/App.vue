@@ -11,7 +11,7 @@
     <Transition name="fade" mode="out-in">
       
       <div v-if="step === 'start-page'" class="card cover-card">
-        <div class="cover-visual">
+        <div class="cover-visual" :class="{ 'skip-intro': hasWatchedIntro }">
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
           
           <img :src="animalCivet" alt="白鼻心" class="kv-animal civet">
@@ -23,7 +23,9 @@
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
           <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
-          <button @click="handleOpenAgeModal" class="btn btn-start-game">開始測驗</button>
+          <button @click="handleOpenAgeModal" class="btn btn-start-game" :class="{ 'skip-intro': hasWatchedIntro }">
+  開始測驗
+</button>
         </div>
       </div>
 
@@ -146,6 +148,8 @@ const isAgeModalOpen = ref(false)
 const currentQuestion = ref(0)
 const totalScore = ref(0)
 const isMuted = ref(false)
+const hasWatchedIntro = ref(false) // 是否已經看過開場動物動畫
+const isAgeVerified = ref(false)   // 是否已經驗證過 18 歲
 
 // 3. 音效設定
 const bgm = new Audio(bgmFile)
@@ -216,9 +220,24 @@ const handleShare = async () => {
   } catch (err) { console.log('分享失敗:', err); }
 };
 
-const handleOpenAgeModal = () => { playClickSound(); isAgeModalOpen.value = true; }
+// 🌟 修改開頭按鈕：如果驗證過了，直接跳到測驗，不用再開彈窗
+const handleOpenAgeModal = () => { 
+  playClickSound(); 
+  if (isAgeVerified.value) {
+    // 如果已經確認過 18 歲了，直接進測驗！
+    step.value = 'quiz';
+    if (!isMuted.value) { bgm.play().catch(()=>{}); }
+  } else {
+    // 第一次來，還是要乖乖跳年齡確認
+    isAgeModalOpen.value = true; 
+  }
+}
+// 🌟 修改確認年齡：點下「是」之後，把驗證狀態改成 true
 const handleConfirmAge = () => { 
-  playClickSound(); isAgeModalOpen.value = false; step.value = 'quiz';
+  playClickSound(); 
+  isAgeModalOpen.value = false; 
+  isAgeVerified.value = true; // 👈 標記為已驗證
+  step.value = 'quiz';
   if (!isMuted.value) { bgm.play().catch(()=>{}); }
 }
 const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿飲酒。"); }
@@ -227,8 +246,15 @@ const handleOptionClick = (score) => {
   if (currentQuestion.value < questions.length - 1) { currentQuestion.value++; } 
   else { step.value = 'loading'; setTimeout(() => { step.value = 'result' }, 3000); }
 }
-const handleReset = () => { 
-  playClickSound(); step.value = 'start-page'; currentQuestion.value = 0; totalScore.value = 0; bgm.pause(); bgm.currentTime = 0;
+const handleReset = () => {  
+  playClickSound(); 
+  step.value = 'start-page'; 
+  currentQuestion.value = 0; 
+  totalScore.value = 0; 
+  bgm.pause(); 
+  bgm.currentTime = 0;
+  
+  hasWatchedIntro.value = true; // 👈 重置時，強迫標記為「已看過動畫」
 }
 const handleGoToStore = () => { playClickSound(); window.location.href = "https://18brew.com.tw/product-category/tea_plum_wine/"; }
 </script>
@@ -411,7 +437,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
     transform: translateY(0);
   }
   5% {
-    transform: translateY(-12px); 
+    transform: translateY(-6px); 
   }
   10% {
     transform: translateY(0);     
@@ -447,4 +473,11 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .modal-card { background: white; width: 85%; padding: 30px; border-radius: 20px; text-align: center; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+/* 🌟 核心魔法：當重新測驗回到首頁時，強制所有動物與按鈕瞬間現身，不用再等 3 秒 */
+.skip-intro .kv-animal,
+.btn-start-game.skip-intro {
+  opacity: 1 !important;
+  animation: none !important; /* 👈 拔掉所有出場動畫 */
+  transition: none !important;
+}
 </style>
