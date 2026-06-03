@@ -206,13 +206,22 @@ const resultData = computed(() => {
 })
 
 // 6. 互動方法
+// 🌟 終極優化版：自動幫網址綁上「不重複的小尾巴（時間戳記）」，強迫 LINE 吐出預覽圖
 const handleShare = async () => {
   playClickSound();
+  
+  // 核心魔法：取得當下時間的毫秒數（例如 1717431234567），確保每次分享的網址尾巴都長得不一樣！
+  const uniqueId = new Date().getTime();
+  
+  // 自動組合成：https://alcohol-test-game-5nvx.vercel.app/?v=1717431234567
+  const dynamicUrl = `${window.location.origin}${window.location.pathname}?v=${uniqueId}`;
+
   const shareData = {
     title: '我的微醺精靈人格',
     text: `我在【尋找你的微醺精靈】 中，測出了我是「${resultData.value.title}－${resultData.value.animal}」！你也快來測測看吧！`,
-    url: window.location.href
+    url: dynamicUrl // 👈 這裡帶入自動加了尾巴的全新網址
   };
+
   try {
     if (navigator.share) {
       await navigator.share(shareData);
