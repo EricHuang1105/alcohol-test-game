@@ -375,12 +375,27 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .btn-share { background: #d2691e; margin-top: 20px; }
 .btn-share:hover { background: #a0522d; }
 
+/* 1. 同時控制結果頁面的 下載、分享 與 導購按鈕 */
 .result-card .btn-download,
 .result-card .btn-share,
 .result-card .btn {
-  justify-content: flex-start !important; /* 強制靠左，讓圖標起跑點一致 */
-  padding-left: 55px !important;         /* 🌟 修正：從 65px 調整為 55px，整組圖文就會回彈到最正中央！ */
-  gap: 12px !important;                  /* 固定圖標與文字的精緻間距 */
+  position: relative;          /* 🌟 建立座標基準，讓裡面的小圖標可以依據它來對齊 */
+  justify-content: center !important; /* 🌟 讓按鈕文字恢復「絕對置中」 */
+  padding-left: 0 !important;   /* 拔掉之前設定的左邊距 */
+  padding-right: 0 !important;  
+}
+
+/* 2. 核心魔法：把小圖標從原本的排隊隊伍中抽出來，單獨釘在左邊固定位置 */
+.result-card .btn-icon { 
+  width: 22px; 
+  height: 22px; 
+  object-fit: contain; 
+  flex-shrink: 0; 
+  
+  position: absolute;          /* 🌟 開啟絕對定位（隱形圖層） */
+  left: 25px;                  /* 🌟 距離按鈕最左邊固定 25 像素，三個圖標就會完美垂直對齊！ */
+  top: 50%;                    /* 讓圖標上下居中 */
+  transform: translateY(-50%); /* 修正上下居中的偏差值 */
 }
 
 .btn-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
