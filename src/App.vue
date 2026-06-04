@@ -87,19 +87,25 @@
         
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         
-       <button @click="handleDownloadCard" class="btn btn-outline" data-html2canvas-ignore="true">
-          💾 下載專屬精靈卡
-        </button>
+       <!-- 只要加上 v-if="!isGenerating" 就可以了，ignore 屬性可以刪掉 -->
 
-        <button @click="handleShare" class="btn btn-share">
-          <img :src="shareIcon" alt="分享" class="btn-icon">
-          分享結果，尋找你的同好!
-        </button>
+<button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-outline">
+  💾 下載我的微醺精靈卡
+</button>
 
-        <button @click="handleGoToStore" class="btn">
-          <img :src="giftIcon" alt="禮物" class="btn-icon">
-          把你的微醺精靈帶回家~
-        </button>
+<button v-if="!isGenerating" @click="handleReset" class="btn-reset">
+  重新測驗
+</button>
+
+<button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
+  <img :src="shareIcon" alt="分享" class="btn-icon">
+  分享結果，尋找你的同好
+</button>
+
+<button v-if="!isGenerating" @click="handleGoToStore" class="btn">
+  <img :src="giftIcon" alt="禮物" class="btn-icon">
+  把你的微醺精靈帶回家
+</button>
       </div>
 
     </Transition>
@@ -210,30 +216,36 @@ const resultData = computed(() => {
 })
 
 // 6. 結果圖下載
-import html2canvas from 'html2canvas' // 🌟 1. 引入截圖魔法套件
+// 🌟 1. 記得在最上面的 import 補上 nextTick
+import { ref, computed, onMounted, nextTick } from 'vue' 
+import html2canvas from 'html2canvas'
 
-// ... (中間你原本的變數宣告保持不變) ...
+// ...其他程式碼保持不變...
 
-const resultCardRef = ref(null) // 🌟 2. 準備一個 ref，等一下用來綁定結果卡片
+// 🌟 2. 新增一個變數，用來控制截圖瞬間的按鈕隱藏
+const isGenerating = ref(false)
 
-// 🌟 3. 新增下載圖片的方法
+// 🌟 3. 更新下載方法
 const handleDownloadCard = async () => {
   playClickSound();
-  
   if (!resultCardRef.value) return;
 
+  // 魔法開始：先把按鈕藏起來
+  isGenerating.value = true; 
+  
+  // 等待 Vue 把畫面更新完畢 (超級關鍵！確保按鈕真的消失了才按快門)
+  await nextTick(); 
+
   try {
-    // 呼叫 html2canvas 幫我們把指定的 DOM 區塊拍成照片
     const canvas = await html2canvas(resultCardRef.value, {
-      scale: 2, // 放大 2 倍輸出，確保手機看圖片時依然超高畫質
-      useCORS: true, // 允許跨域圖片載入（避免你的 WebP 截不出來）
-      backgroundColor: '#ffffff' // 確保卡片底色是乾淨的白色
+      scale: 3, // 🌟 將解析度從 2 拉高到 3 (甚至可以寫 4)，這樣文字邊緣就會很銳利
+      useCORS: true,
+      backgroundColor: '#ffffff'
     });
 
-    // 將畫布轉為 JPG 格式的資料網址
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    // 將品質調到最高 1.0 (原本是 0.9)
+    const imgData = canvas.toDataURL('image/jpeg', 1.0); 
 
-    // 建立一個隱形的下載連結並自動點擊
     const link = document.createElement('a');
     link.download = `我的微醺精靈_${resultData.value.title}.jpg`;
     link.href = imgData;
@@ -242,9 +254,11 @@ const handleDownloadCard = async () => {
   } catch (error) {
     console.error("生成圖片失敗:", error);
     alert("圖片生成失敗，請稍後再試！");
+  } finally {
+    // 魔法結束：不管成功或失敗，截圖完馬上把按鈕變回來
+    isGenerating.value = false; 
   }
 }
-
 // 7. 互動方法
 // 🌟 終極優化版：自動幫網址綁上「不重複的小尾巴（時間戳記）」，強迫 LINE 吐出預覽圖
 const handleShare = async () => {
