@@ -85,16 +85,13 @@
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
         
-        <button @click="handleReset" class="btn-reset">重新測驗</button>
         
-       <!-- 只要加上 v-if="!isGenerating" 就可以了，ignore 屬性可以刪掉 -->
+<button v-if="!isGenerating" @click="handleReset" class="btn-reset">
+  重新測驗
+</button>
 
 <button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-outline">
   💾 下載我的微醺精靈卡
-</button>
-
-<button v-if="!isGenerating" @click="handleReset" class="btn-reset">
-  重新測驗
 </button>
 
 <button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
@@ -128,7 +125,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import html2canvas from 'html2canvas'
 
 // 1. 匯入所有資源
 import coverImageFile from './assets/cover.webp'
@@ -216,38 +214,33 @@ const resultData = computed(() => {
 })
 
 // 6. 結果圖下載
-// 🌟 1. 記得在最上面的 import 補上 nextTick
-import { ref, computed, onMounted, nextTick } from 'vue' 
-import html2canvas from 'html2canvas'
 
-// ...其他程式碼保持不變...
-
-// 🌟 2. 新增一個變數，用來控制截圖瞬間的按鈕隱藏
+const resultCardRef = ref(null)
 const isGenerating = ref(false)
 
-// 🌟 3. 更新下載方法
 const handleDownloadCard = async () => {
   playClickSound();
   if (!resultCardRef.value) return;
 
-  // 魔法開始：先把按鈕藏起來
+  // 1. 魔法開始：先把按鈕藏起來
   isGenerating.value = true; 
   
-  // 等待 Vue 把畫面更新完畢 (超級關鍵！確保按鈕真的消失了才按快門)
-  await nextTick(); 
+  // 2. 【關鍵修正】放棄 nextTick，改用 setTimeout 強制等瀏覽器 0.15 秒
+  // 讓瀏覽器有絕對充足的時間把按鈕從畫面上清空，再按下快門！
+  await new Promise(resolve => setTimeout(resolve, 150)); 
 
   try {
     const canvas = await html2canvas(resultCardRef.value, {
-      scale: 3, // 🌟 將解析度從 2 拉高到 3 (甚至可以寫 4)，這樣文字邊緣就會很銳利
+      scale: 4, // 🌟 倍率直接拉到 4，保證在手機上看也跟視網膜螢幕一樣銳利
       useCORS: true,
       backgroundColor: '#ffffff'
     });
 
-    // 將品質調到最高 1.0 (原本是 0.9)
-    const imgData = canvas.toDataURL('image/jpeg', 1.0); 
+    // 3. 【關鍵修正】捨棄 JPG 壓縮，改存成無損的 PNG 格式
+    const imgData = canvas.toDataURL('image/png'); 
 
     const link = document.createElement('a');
-    link.download = `我的微醺精靈_${resultData.value.title}.jpg`;
+    link.download = `我的微醺精靈_${resultData.value.title}.png`; // 這裡也改成 .png
     link.href = imgData;
     link.click();
     
@@ -255,7 +248,7 @@ const handleDownloadCard = async () => {
     console.error("生成圖片失敗:", error);
     alert("圖片生成失敗，請稍後再試！");
   } finally {
-    // 魔法結束：不管成功或失敗，截圖完馬上把按鈕變回來
+    // 4. 魔法結束：不管成功或失敗，截圖完馬上把按鈕變回來
     isGenerating.value = false; 
   }
 }
