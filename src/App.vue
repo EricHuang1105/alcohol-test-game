@@ -353,12 +353,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   
   display: flex; 
   align-items: center; 
-  /* 👇 核心修正 1：放棄強行居中，改用向左對齊 */
-  justify-content: flex-start; 
-  /* 👇 核心修正 2：用內邊距（Padding）把整組圖文推到接近中央的位置 */
-  padding-left: 65px; 
-  
-  gap: 12px; /* 稍微拉開圖標與文字的間距，看起來更舒適 */
+ justify-content: center; 
+ gap: 8px;
   transition: 0.2s;
 }
 .btn:active { transform: scale(0.98); }
@@ -378,6 +374,15 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 分享按鈕與重新測驗 */
 .btn-share { background: #d2691e; margin-top: 20px; }
 .btn-share:hover { background: #a0522d; }
+
+.result-card .btn-download,
+.result-card .btn-share,
+.result-card .btn {
+  justify-content: flex-start !important; /* 強制靠左，讓圖標起跑點一致 */
+  padding-left: 55px !important;         /* 🌟 修正：從 65px 調整為 55px，整組圖文就會回彈到最正中央！ */
+  gap: 12px !important;                  /* 固定圖標與文字的精緻間距 */
+}
+
 .btn-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
 
 /* 🌟 專屬下載按鈕：優雅的茶葉深綠，完美契合茶梅酒與精靈主題 */
