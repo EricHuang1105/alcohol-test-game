@@ -71,7 +71,7 @@
         </p>
       </div>
 
-      <div v-else-if="step === 'result'" class="card result-card">
+      <div v-else-if="step === 'result'" class="card result-card" ref="resultCardRef">
         <p class="result-pre">你的微醺人格是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
         
@@ -87,6 +87,10 @@
         
         <button @click="handleReset" class="btn-reset">重新測驗</button>
         
+       <button @click="handleDownloadCard" class="btn btn-outline" data-html2canvas-ignore="true">
+          💾 下載專屬精靈卡
+        </button>
+
         <button @click="handleShare" class="btn btn-share">
           <img :src="shareIcon" alt="分享" class="btn-icon">
           分享結果，尋找你的同好!
@@ -205,7 +209,43 @@ const resultData = computed(() => {
   return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
 })
 
-// 6. 互動方法
+// 6. 結果圖下載
+import html2canvas from 'html2canvas' // 🌟 1. 引入截圖魔法套件
+
+// ... (中間你原本的變數宣告保持不變) ...
+
+const resultCardRef = ref(null) // 🌟 2. 準備一個 ref，等一下用來綁定結果卡片
+
+// 🌟 3. 新增下載圖片的方法
+const handleDownloadCard = async () => {
+  playClickSound();
+  
+  if (!resultCardRef.value) return;
+
+  try {
+    // 呼叫 html2canvas 幫我們把指定的 DOM 區塊拍成照片
+    const canvas = await html2canvas(resultCardRef.value, {
+      scale: 2, // 放大 2 倍輸出，確保手機看圖片時依然超高畫質
+      useCORS: true, // 允許跨域圖片載入（避免你的 WebP 截不出來）
+      backgroundColor: '#ffffff' // 確保卡片底色是乾淨的白色
+    });
+
+    // 將畫布轉為 JPG 格式的資料網址
+    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
+    // 建立一個隱形的下載連結並自動點擊
+    const link = document.createElement('a');
+    link.download = `我的微醺精靈_${resultData.value.title}.jpg`;
+    link.href = imgData;
+    link.click();
+    
+  } catch (error) {
+    console.error("生成圖片失敗:", error);
+    alert("圖片生成失敗，請稍後再試！");
+  }
+}
+
+// 7. 互動方法
 // 🌟 終極優化版：自動幫網址綁上「不重複的小尾巴（時間戳記）」，強迫 LINE 吐出預覽圖
 const handleShare = async () => {
   playClickSound();
