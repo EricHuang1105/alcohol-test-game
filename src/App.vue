@@ -90,8 +90,9 @@
   重新測驗
 </button>
 
-<button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-outline">
-  💾 下載我的微醺精靈卡
+<button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-download">
+  <img :src="downloadIcon" alt="下載" class="btn-icon">
+  下載我的微醺精靈卡
 </button>
 
 <button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
@@ -136,6 +137,7 @@ import img3 from './assets/result_3.webp'
 import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
 
+import downloadIcon from './assets/icon-download.png'
 import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
 import bgmFile from './assets/bgm.mp3'
@@ -360,6 +362,18 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .btn-share { background: #d2691e; margin-top: 20px; }
 .btn-share:hover { background: #a0522d; }
 .btn-icon { width: 22px; height: 22px; object-fit: contain; }
+
+/* 🌟 專屬下載按鈕：優雅的茶葉深綠，完美契合茶梅酒與精靈主題 */
+.btn-download {
+  background: #4a6754; 
+  color: white;
+  margin-top: 20px;
+}
+
+/* 輕微的滑鼠懸停/點擊加深效果，讓按鈕有按下去的動態回饋 */
+.btn-download:active {
+  background: #395041;
+}
 
 .btn-reset { 
   background: none; border: none; color: #888; text-decoration: underline; 
