@@ -372,7 +372,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 }
 
 /* 分享按鈕與重新測驗 */
-.btn-share { background: #d2691e; margin-top: 20px; }
+.btn-share { background: #dc5b00; margin-top: 20px; }
 .btn-share:hover { background: #a0522d; }
 
 /* 1. 同時控制結果頁面的 下載、分享 與 導購按鈕 */
