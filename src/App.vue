@@ -338,11 +338,28 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   padding: 0 10px;      
 }
 
-/* 按鈕共用樣式 (加入 flex 排版讓圖文對齊) */
+/* 🌟 修改後的按鈕共用樣式 */
 .btn { 
-  background: #8b4513; color: white; border: none; padding: 15px; border-radius: 30px; 
-  width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;
-  display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+  background: #8b4513; 
+  color: white; 
+  border: none; 
+  padding: 15px; 
+  border-radius: 30px; 
+  width: 100%; 
+  font-size: 16px; 
+  font-weight: bold; 
+  cursor: pointer; 
+  margin-top: 15px;
+  
+  display: flex; 
+  align-items: center; 
+  /* 👇 核心修正 1：放棄強行居中，改用向左對齊 */
+  justify-content: flex-start; 
+  /* 👇 核心修正 2：用內邊距（Padding）把整組圖文推到接近中央的位置 */
+  padding-left: 65px; 
+  
+  gap: 12px; /* 稍微拉開圖標與文字的間距，看起來更舒適 */
+  transition: 0.2s;
 }
 .btn:active { transform: scale(0.98); }
 .btn-outline { background: transparent; color: #8b4513; border: 1px solid #8b4513; }
@@ -361,7 +378,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 分享按鈕與重新測驗 */
 .btn-share { background: #d2691e; margin-top: 20px; }
 .btn-share:hover { background: #a0522d; }
-.btn-icon { width: 22px; height: 22px; object-fit: contain; }
+.btn-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
 
 /* 🌟 專屬下載按鈕：優雅的茶葉深綠，完美契合茶梅酒與精靈主題 */
 .btn-download {
