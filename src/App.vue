@@ -12,6 +12,7 @@
       
       <div v-if="step === 'start-page'" class="card cover-card">
         <div class="cover-visual" :class="{ 'skip-intro': hasWatchedIntro }">
+          <img :src="logo" alt="CHAME CHILL" class="brand-logo-cover-in">
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
           
           <img :src="animalCivet" alt="白鼻心" class="kv-animal civet">
@@ -28,8 +29,11 @@
 </button>
         </div>
       </div>
-
+      
       <div v-else-if="step === 'quiz'" class="card quiz-page-card">
+      
+      <img :src="logo" alt="CHAME CHILL" class="brand-logo-qa-center">
+        
         <div class="progress-bar">
           <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
         </div>
@@ -62,7 +66,7 @@
         </div>
         <p class="loading-text">
           <span 
-            v-for="(char, index) in '茶梅妹正在搖製命定酒款，召喚你的微醺精靈...'" 
+            v-for="(char, index) in '茶梅妹正在召喚你的微醺精靈...'" 
             :key="index" 
             :style="{ 'animation-delay': `${index * 0.15}s` }"
           >
@@ -70,8 +74,10 @@
           </span>
         </p>
       </div>
-
+      
+      
       <div v-else-if="step === 'result'" class="card result-card" ref="resultCardRef">
+        <img :src="logo" alt="CHAME CHILL" class="brand-logo-result-left">
         <p class="result-pre">你的微醺精靈是</p>
         <h2 class="result-title">✨ {{ resultData.title }} ✨</h2>
         
@@ -140,6 +146,7 @@ import img5 from './assets/result_5.webp'
 import downloadIcon from './assets/icon-download.png'
 import shareIcon from './assets/icon-share.png'
 import giftIcon from './assets/icon-gift.png'
+import logo from './assets/logo.png'
 import bgmFile from './assets/bgm.mp3'
 import clickFile from './assets/click.mp3'
 
@@ -590,4 +597,35 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   animation: none !important; /* 👈 拔掉所有出場動畫 */
   transition: none !important;
 }
+
+/* ===================================================
+   🌟 品牌 Logo 專屬三頁面視覺對齊設定
+   =================================================== */
+
+/* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
+.brand-logo-cover-in {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 60px;   /* 直式在圖內做小小的，精緻不搶戲 */
+  height: auto;
+  z-index: 5;    /* 確保堆疊在封面底圖之上 */
+}
+
+/* 2. QA 頁面卡片外置中大 Logo */
+.brand-logo-qa-center {
+  width: 90px;  
+  height: auto;
+  margin: -50px auto 25px;
+  display: block;
+}
+
+/* 3. 結果頁面卡片外左上角 Logo */
+.brand-logo-result-left {
+  width: 65px;   /* 靠左款維持優雅內斂尺寸 */
+  height: auto;
+  margin: -50px auto 15px 0;
+  display: block;
+}
+
 </style>
