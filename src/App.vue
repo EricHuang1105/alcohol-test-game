@@ -22,7 +22,7 @@
         </div>
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
-          <p>探尋內心深處的靈魂，調製專屬於你的特調</p>
+          <p>探尋你的內心深處，找到你專屬的微醺精靈!</p>
           <button @click="handleOpenAgeModal" class="btn btn-start-game" :class="{ 'skip-intro': hasWatchedIntro }">
   開始測驗
 </button>
@@ -62,7 +62,7 @@
         </div>
         <p class="loading-text">
           <span 
-            v-for="(char, index) in '茶梅妹正在為你調配命定酒款...'" 
+            v-for="(char, index) in '茶梅妹正在搖製命定酒款，召喚你的微醺精靈...'" 
             :key="index" 
             :style="{ 'animation-delay': `${index * 0.15}s` }"
           >
@@ -72,15 +72,15 @@
       </div>
 
       <div v-else-if="step === 'result'" class="card result-card" ref="resultCardRef">
-        <p class="result-pre">你的微醺人格是</p>
-        <h2 class="result-title">{{ resultData.title }}</h2>
+        <p class="result-pre">你的微醺精靈是</p>
+        <h2 class="result-title">✨ {{ resultData.title }} ✨</h2>
         
-        <div class="result-visual">
-          <img :src="resultData.image" :alt="resultData.animal" class="spirit-image">
-        </div>
+       <div class="result-visual">
+        <img :src="resultData.image" :alt="resultData.title" class="spirit-image">
+       </div>
 
-        <div class="spirit-animal">✨ {{ resultData.animal }} ✨</div>
-        <p class="description">{{ resultData.desc }}</p>
+       <p class="description">{{ resultData.desc }}</p>
+
         <div class="guide">
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
@@ -208,11 +208,11 @@ const questions = [
 // 5. 結果判定
 const resultData = computed(() => {
   const s = totalScore.value
-  if (s <= 10) return { title: "合法擺爛型", animal: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
-  if (s <= 14) return { title: "自由獨享型", animal: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
-  if (s <= 17) return { title: "踏實成就型", animal: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
-  if (s <= 21) return { title: "質感審美型", animal: "石虎精靈", image: img4, desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
-  return { title: "群居悶騷型", animal: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
+  if (s <= 10) return { title: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
+  if (s <= 14) return { title: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
+  if (s <= 17) return { title: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
+  if (s <= 21) return { title: "石虎精靈", image: img4, desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
+  return { title: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
 })
 
 // 6. 結果圖下載
