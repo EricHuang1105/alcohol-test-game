@@ -106,9 +106,8 @@
           下載我的微醺精靈卡
         </button>
 
-        <button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
-          <img :src="shareIcon" alt="分享" class="btn-icon">
-          分享結果，尋找你的同好
+        <button v-if="!isGenerating" @click="openCamera" class="btn btn-share" style="background-color: #6b8e23;">
+          和我的微醺精靈拍張照
         </button>
 
         <button v-if="!isGenerating" @click="handleGoToStore" class="btn">
@@ -117,7 +116,22 @@
         </button>
       </div>
 
+<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
+        <h2 class="main-title" style="margin-top:0;">微醺拍貼機</h2>
+        <div class="camera-wrapper">
+          <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
+          <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
+        </div>
+        
+        <div style="margin-top: 20px;">
+          <button @click="takePhoto" class="btn">喀嚓！存入手機相簿</button>
+          <button @click="closeCamera" class="btn btn-outline">返回結果</button>
+        </div>
+      </div>
+
     </Transition>
+
+
 
 <div v-if="isAgeModalOpen" class="modal-overlay">
       <div class="modal-card">
@@ -159,6 +173,13 @@ import animalPangolin from './assets/home_pangolin.png'        // 2. 穿山甲
 import animalSquirrel from './assets/home_squirrel.png'        // 3. 白面鼯鼠
 import animalLeopardCat from './assets/home_leopard.png'       // 4. 石虎 (注意對齊你資料夾的檔名 home_leopard.png)
 import animalMagpie from './assets/home_magpie.png'            // 5. 台灣藍鵲
+
+import frame1 from './assets/frame_1.png'
+import frame2 from './assets/frame_2.png'
+import frame3 from './assets/frame_3.png'
+import frame4 from './assets/frame_4.png'
+import frame5 from './assets/frame_5.png'
+
 
 
 // 2. 狀態管理
@@ -218,12 +239,15 @@ const questions = [
 // 5. 結果判定
 const resultData = computed(() => {
   const s = totalScore.value
-  if (s <= 10) return { title: "穿山甲精靈", image: img1, desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
-  if (s <= 14) return { title: "白面鼯鼠精靈", image: img2, desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
-  if (s <= 17) return { title: "白鼻心精靈", image: img3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
-  if (s <= 21) return { title: "石虎精靈", image: img4, desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
-  return { title: "台灣藍鵲精靈", image: img5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
+  if (s <= 10) return { title: "穿山甲精靈", image: img1, frame: frame1, desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
+  if (s <= 14) return { title: "白面鼯鼠精靈", image: img2, frame: frame2, desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
+  if (s <= 17) return { title: "白鼻心精靈", image: img3, frame: frame3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
+  if (s <= 21) return { title: "石虎精靈", image: img4, frame: frame4, desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
+  return { title: "台灣藍鵲精靈", image: img5, frame: frame5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
 })
+
+const videoRef = ref(null)
+const isCameraActive = ref(false)
 
 // 6. 結果圖下載
 
@@ -328,6 +352,84 @@ const handleReset = () => {
   hasWatchedIntro.value = true; // 👈 重置時，強迫標記為「已看過動畫」
 }
 const handleGoToStore = () => { playClickSound(); window.location.href = "https://18brew.com.tw/product-category/tea_plum_wine/"; }
+
+// ==========================================
+// 8. 拍立得 (相機與合成邏輯)
+// ==========================================
+
+// 📸 開啟相機
+const openCamera = async () => {
+  playClickSound();
+  step.value = 'camera'; // 切換到相機頁面
+  
+  try {
+    // 請求前置鏡頭權限
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { facingMode: 'user' } 
+    });
+    
+    // 確保 Vue 已經渲染了 video 標籤後，再將影像流灌入
+    nextTick(() => {
+      if (videoRef.value) {
+        videoRef.value.srcObject = stream;
+      }
+    });
+  } catch (err) {
+    console.error("相機權限錯誤:", err);
+    alert("無法開啟相機，請確認您已允許瀏覽器使用相機權限喔！");
+    step.value = 'result'; // 拒絕權限的話，退回結果頁
+  }
+}
+
+// 📸 關閉相機 (切換頁面時釋放硬體資源，避免相機綠燈一直亮著)
+const closeCamera = () => {
+  playClickSound();
+  if (videoRef.value && videoRef.value.srcObject) {
+    const tracks = videoRef.value.srcObject.getTracks();
+    tracks.forEach(track => track.stop()); // 停止所有影像軌道
+  }
+  step.value = 'result'; // 返回結果頁
+}
+
+// 📸 拍照與合成下載
+const takePhoto = () => {
+  playClickSound();
+  const video = videoRef.value;
+  if (!video) return;
+
+  // 建立虛擬畫布，大小與相機實際抓到的解析度相同
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+
+  // ⚠️ 鏡像魔法 1：因為前鏡頭預覽是反的 (像照鏡子)，畫到 canvas 時必須水平翻轉
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // ⚠️ 鏡像魔法 2：把畫布矩陣翻轉回來！否則接下來畫上去的相框文字也會變成左右顛倒
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  // 載入對應結果的相框，並蓋在人物上方
+  const frameImg = new Image();
+  // 加上 crossorigin 設定，避免某些瀏覽器在繪製外部圖片時產生跨網域 (CORS) 污染錯誤
+  frameImg.crossOrigin = "anonymous";
+  frameImg.src = resultData.value.frame; // 抓取當前結果對應的相框圖片
+  
+  frameImg.onload = () => {
+    // 將透明相框畫滿整個畫布
+    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+
+    // 觸發圖片下載 (手機上會提示儲存至照片或檔案)
+    const imgData = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `微醺拍貼_${resultData.value.title}.png`;
+    link.href = imgData;
+    link.click();
+  };
+}
+
 </script>
 
 <style scoped>
@@ -655,6 +757,48 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 確保卡片內容不會被 Logo 擋住 */
 .quiz-page-card {
   margin-top: 80px !important; /* 騰出空間給上面的 Logo */
+}
+
+/* ===================================================
+   🌟 拍立得相機專屬視覺設定
+   =================================================== */
+
+/* 1. 調整相機外層卡片的內距 */
+.camera-card {
+  padding: 20px;
+}
+
+/* 2. 相機畫面容器：設定完美的拍貼機比例 */
+.camera-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4; /* 🌟 這是關鍵：強制鎖定成類似 IG 限動或拍立得的直式比例 */
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 15px; /* 圓角修飾 */
+  background: #222;    /* 鏡頭載入前或尚未開啟時的預設黑底色 */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 3. 攝影機預覽畫面：滿版填滿並加上鏡像翻轉 */
+.camera-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* 🌟 確保鏡頭畫面完美填滿容器，不留黑邊也不變形 */
+  transform: scaleX(-1); /* 🌟 鏡像魔法：視覺上將前鏡頭左右翻轉，讓使用者看起來像照鏡子一樣自然 */
+  display: block;
+}
+
+/* 4. 動態邊框：絕對定位蓋在畫面上方 */
+.camera-frame {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;    /* 確保相框圖檔也能完美貼合容器大小 */
+  pointer-events: none; /* 讓使用者的點擊能穿透相框，避免干擾底層的互動 */
+  z-index: 10;          /* 確保相框疊在攝影機畫面 (video) 的上方 */
 }
 
 </style>
