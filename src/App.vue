@@ -631,8 +631,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 3. 結果頁面卡片外左上角 Logo */
 .brand-logo-result-left {
   position: absolute;
-  top: 30px;
-  left: 35px;
+  top: 15px;
+  left: 15px;
   width: 70px;
   height: auto;
   display: block;
