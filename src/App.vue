@@ -1,9 +1,11 @@
 <template>
 
-<link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
+
   
   <div id="app" class="container">
     
+    <link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
+
     <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
       {{ isMuted ? '🔇' : '🔊' }}
     </button>
@@ -116,6 +118,18 @@
       </div>
 
     </Transition>
+
+<div v-if="isAgeModalOpen" class="modal-overlay">
+      <div class="modal-card">
+        <h2>🔞 內容確認</h2>
+        <p>本測驗涉及飲酒文化內容<br>請確認您是否已滿 18 歲？</p>
+        <div class="modal-btns">
+          <button @click="handleConfirmAge" class="btn">是，我已滿 18 歲</button>
+          <button @click="handleAlertUnderage" class="btn btn-outline">否</button>
+        </div>
+        <p class="legal-warning-small">未滿 18 歲請勿飲酒</p>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -595,8 +609,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
 .brand-logo-cover-in {
   position: absolute;
-  top: 165px;
-  left: 35px;
+  top: 10px;
+  left: 20px;
   width: 80px; 
   height: auto;
   display: block;
@@ -605,7 +619,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 2. QA 頁面卡片外置中大 Logo */
 .brand-logo-qa-center {
   position: absolute;
-  top: 40px;
+  top: -150px;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;  
