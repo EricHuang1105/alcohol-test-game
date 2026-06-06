@@ -8,11 +8,15 @@
       {{ isMuted ? '🔇' : '🔊' }}
     </button>
     
+    
+
     <Transition name="fade" mode="out-in">
-      
+    
       <div v-if="step === 'start-page'" class="card cover-card">
+       
+       <img v-if="step === 'start-page'" :src="logo" alt="CHAME CHILL" class="brand-logo-cover-in">
+
         <div class="cover-visual" :class="{ 'skip-intro': hasWatchedIntro }">
-          <img :src="logo" alt="CHAME CHILL" class="brand-logo-cover-in">
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
           
           <img :src="animalCivet" alt="白鼻心" class="kv-animal civet">
@@ -607,17 +611,18 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
 .brand-logo-cover-in {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  width: 75px;   /* 大小 */
+  top: 165px;
+  left: 35px;
+  width: 80px; 
   height: auto;
-  z-index: 5;    /* 確保堆疊在封面底圖之上 */
+  display: block;
+  z-index: 20; 
 }
 
 /* 2. QA 頁面卡片外置中大 Logo */
 .brand-logo-qa-center {
   position: absolute;
-  top: 160px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;  
