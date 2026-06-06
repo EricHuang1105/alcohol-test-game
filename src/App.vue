@@ -433,16 +433,13 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 🌟 封面圖片容器（加入 position: relative 讓動物能絕對定位疊在上面） */
 .cover-visual {
   width: 100%;
-  height: 300px; /* 維持你設定的 300px 高度 */
+  height: auto;
   overflow: visible; 
   position: relative;
   margin: 0;
-
-  /* 🌟 核心魔法：讓容器的左下、右下也同步擁有 20px 的圓角！ */
-  /* 這樣就能把原本漏出來、尖尖的黑色直角底色完完全全「裁切隱形」掉！ */
   border-radius: 0 0 20px 20px; 
 }
-.kv-image { width: 100%; height: 100%; object-fit: cover; border-radius: 0 0 20px 20px; }
+.kv-image { width: 100%; height: auto; object-fit: contain; border-radius: 0 0 20px 20px; display: block; }
 
 /* 🌟 【已修改】絕對座標對齊：強制所有去背小動物與封面圖圖層大小完全重疊 */
 .kv-animal {
@@ -454,6 +451,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   object-fit: cover; /* 縮放模式對齊底圖 .kv-image，確保完美相疊不移位 */
   opacity: 0;        /* 預設完全透明 */
   animation: animalFadeIn 0.6s ease-out forwards; /* 動態結束後維持顯示 */
+  border-radius: 0 0 20px 20px;
 }
 
 /* 🌟 首頁「開始測驗」按鈕的延遲淡入設定 */
@@ -609,8 +607,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
 .brand-logo-cover-in {
   position: absolute;
-  top: -15px;
-  left: -15px;
+  top: -10px;
+  left: -10px;
   width: 75px;   /* 大小 */
   height: auto;
   z-index: 5;    /* 確保堆疊在封面底圖之上 */
