@@ -605,9 +605,9 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
 .brand-logo-cover-in {
   position: absolute;
-  top: 15px;
-  left: 15px;
-  width: 60px;   /* 直式在圖內做小小的，精緻不搶戲 */
+  top: 20px;
+  left: 20px;
+  width: 75px;   /* 直式在圖內做小小的，精緻不搶戲 */
   height: auto;
   z-index: 5;    /* 確保堆疊在封面底圖之上 */
 }
@@ -616,15 +616,15 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .brand-logo-qa-center {
   width: 90px;  
   height: auto;
-  margin: -50px auto 25px;
+  margin: -80px auto 25px;
   display: block;
 }
 
 /* 3. 結果頁面卡片外左上角 Logo */
 .brand-logo-result-left {
-  width: 65px;   /* 靠左款維持優雅內斂尺寸 */
+  width: 48px;   /* 靠左款維持優雅內斂尺寸 */
   height: auto;
-  margin: -50px auto 15px 0;
+  margin: -35px auto 15px 0;
   display: block;
 }
 
