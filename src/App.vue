@@ -12,9 +12,8 @@
 
     <Transition name="fade" mode="out-in">
     
-      <div v-if="step === 'start-page'" class="card cover-card">
-       
-       <img v-if="step === 'start-page'" :src="logo" alt="CHAME CHILL" class="brand-logo-cover-in">
+      <div v-if="step === 'start-page'" :key="'start'" class="card cover-card" style="position: relative;">
+        <img :src="logo" alt="CHAME CHILL" class="brand-logo-cover-in">
 
         <div class="cover-visual" :class="{ 'skip-intro': hasWatchedIntro }">
           <img :src="coverImage" alt="遊戲封面" class="kv-image">
@@ -29,44 +28,46 @@
           <h1 class="main-title">尋找你的微醺精靈</h1>
           <p>探尋你的內心深處，找到你專屬的微醺精靈!</p>
           <button @click="handleOpenAgeModal" class="btn btn-start-game" :class="{ 'skip-intro': hasWatchedIntro }">
-  開始測驗
-</button>
-        </div>
-      </div>
-      
-      <div v-else-if="step === 'quiz'" class="card quiz-page-card">
-      
-      <img :src="logo" alt="CHAME CHILL" class="brand-logo-qa-center">
-        
-        <div class="progress-bar">
-          <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
-        </div>
-        <p class="q-count">Question {{ currentQuestion + 1 }} / {{ questions.length }}</p>
-        <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
-        <div class="options">
-          <button 
-            v-for="(opt, i) in questions[currentQuestion].options" 
-            :key="i" 
-            @click="handleOptionClick(opt.score)"
-            class="btn-option"
-          >
-            {{ opt.text }}
+            開始測驗
           </button>
         </div>
       </div>
+      
+      <div v-else-if="step === 'quiz'" :key="'quiz'" style="width: 100%; position: relative;">
+        
+        <img :src="logo" alt="CHAME CHILL" class="brand-logo-qa-center">
+        
+        <div class="card quiz-page-card">
+          <div class="progress-bar">
+            <div class="progress" :style="{ width: ((currentQuestion + 1) / questions.length) * 100 + '%' }"></div>
+          </div>
+          <p class="q-count">Question {{ currentQuestion + 1 }} / {{ questions.length }}</p>
+          <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
+          <div class="options">
+            <button 
+              v-for="(opt, i) in questions[currentQuestion].options" 
+              :key="i" 
+              @click="handleOptionClick(opt.score)"
+              class="btn-option"
+            >
+              {{ opt.text }}
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <div v-else-if="step === 'loading'" class="card loading-card">
+      <div v-else-if="step === 'loading'" :key="'loading'" class="card loading-card">
         <div class="video-container">
           <video 
-  src="/chamei_shake.mp4" 
-  autoplay 
-  loop 
-  muted 
-  playsinline 
-  preload="auto" 
-  :controls="false" 
-  class="loading-video"
-></video>
+            src="/chamei_shake.mp4" 
+            autoplay 
+            loop 
+            muted 
+            playsinline 
+            preload="auto" 
+            :controls="false" 
+            class="loading-video"
+          ></video>
         </div>
         <p class="loading-text">
           <span 
@@ -79,58 +80,41 @@
         </p>
       </div>
       
-      
-      
-      <div v-else-if="step === 'result'" class="card result-card" ref="resultCardRef">
+      <div v-else-if="step === 'result'" :key="'result'" class="card result-card" ref="resultCardRef" style="position: relative;">
         <img :src="logo" alt="CHAME CHILL" class="brand-logo-result-left">
         <p class="result-pre">你的微醺精靈是</p>
         <h2 class="result-title">{{ resultData.title }}</h2>
         
-       <div class="result-visual">
-        <img :src="resultData.image" :alt="resultData.title" class="spirit-image">
-       </div>
+        <div class="result-visual">
+          <img :src="resultData.image" :alt="resultData.title" class="spirit-image">
+        </div>
 
-       <p class="description">{{ resultData.desc }}</p>
+        <p class="description">{{ resultData.desc }}</p>
 
         <div class="guide">
           <strong>🍸 微醺指南：</strong><br>{{ resultData.guide }}
         </div>
         
-        
-<button v-if="!isGenerating" @click="handleReset" class="btn-reset">
-  重新測驗
-</button>
+        <button v-if="!isGenerating" @click="handleReset" class="btn-reset">
+          重新測驗
+        </button>
 
-<button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-download">
-  <img :src="downloadIcon" alt="下載" class="btn-icon">
-  下載我的微醺精靈卡
-</button>
+        <button v-if="!isGenerating" @click="handleDownloadCard" class="btn btn-download">
+          <img :src="downloadIcon" alt="下載" class="btn-icon">
+          下載我的微醺精靈卡
+        </button>
 
-<button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
-  <img :src="shareIcon" alt="分享" class="btn-icon">
-  分享結果，尋找你的同好
-</button>
+        <button v-if="!isGenerating" @click="handleShare" class="btn btn-share">
+          <img :src="shareIcon" alt="分享" class="btn-icon">
+          分享結果，尋找你的同好
+        </button>
 
-<button v-if="!isGenerating" @click="handleGoToStore" class="btn">
-  <img :src="giftIcon" alt="禮物" class="btn-icon">
-  把你的微醺精靈帶回家
-</button>
+        <button v-if="!isGenerating" @click="handleGoToStore" class="btn">
+          <img :src="giftIcon" alt="禮物" class="btn-icon">
+          把你的微醺精靈帶回家
+        </button>
       </div>
 
-    </Transition>
-
-    <Transition name="modal">
-      <div v-if="isAgeModalOpen" class="modal-overlay">
-        <div class="modal-card">
-          <h2>🔞 內容確認</h2>
-          <p>本測驗涉及飲酒文化內容<br>請確認您是否已滿 18 歲？</p>
-          <div class="modal-btns">
-            <button @click="handleConfirmAge" class="btn">是，我已滿 18 歲</button>
-            <button @click="handleAlertUnderage" class="btn btn-outline">否</button>
-          </div>
-          <p class="legal-warning-small">未滿 18 歲請勿飲酒</p>
-        </div>
-      </div>
     </Transition>
 
   </div>
@@ -592,7 +576,7 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .description { font-size: 15px; line-height: 1.6; color: #555; text-align: left; }
 .guide { background: #fff8f0; padding: 15px; border-radius: 10px; font-size: 14px; text-align: left; margin: 15px 0; border-left: 5px solid #8b4513; line-height: 1.5; color: #444;}
 .legal-warning-small { font-size: 12px; color: #999; margin-top: 15px; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 9999 !important; }
 .modal-card { background: white; width: 85%; padding: 30px; border-radius: 20px; text-align: center; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
@@ -616,18 +600,18 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
   width: 80px; 
   height: auto;
   display: block;
-  z-index: 20; 
 }
 
 /* 2. QA 頁面卡片外置中大 Logo */
 .brand-logo-qa-center {
   position: absolute;
-  top: 60px;
+  top: 40px;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;  
   height: auto;
   display: block;
+  z-index: 50;
 }
 
 /* 3. 結果頁面卡片外左上角 Logo */
