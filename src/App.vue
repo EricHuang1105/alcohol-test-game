@@ -66,7 +66,7 @@
         </div>
         <p class="loading-text">
           <span 
-            v-for="(char, index) in '茶梅妹正在召喚你的微醺精靈...'" 
+            v-for="(char, index) in '茶梅妹正在調製你的微醺精靈...'" 
             :key="index" 
             :style="{ 'animation-delay': `${index * 0.15}s` }"
           >
@@ -76,10 +76,11 @@
       </div>
       
       
+      
       <div v-else-if="step === 'result'" class="card result-card" ref="resultCardRef">
         <img :src="logo" alt="CHAME CHILL" class="brand-logo-result-left">
         <p class="result-pre">你的微醺精靈是</p>
-        <h2 class="result-title">✨ {{ resultData.title }} ✨</h2>
+        <h2 class="result-title">{{ resultData.title }}</h2>
         
        <div class="result-visual">
         <img :src="resultData.image" :alt="resultData.title" class="spirit-image">
@@ -430,15 +431,18 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 .main-title { font-size: 26px; line-height: 1.8; color: #8b4513; margin: 20px 0; }
 
 /* 🌟 封面圖片容器（加入 position: relative 讓動物能絕對定位疊在上面） */
-.cover-visual { 
-  width: 100%; 
-  height: 290px; 
-  border-radius: 15px; 
-  overflow: hidden; 
-  margin-bottom: 20px; 
-  position: relative; 
+.cover-visual {
+  width: 100%;
+  height: 300px; /* 維持你設定的 300px 高度 */
+  overflow: visible; 
+  position: relative;
+  margin: 0;
+
+  /* 🌟 核心魔法：讓容器的左下、右下也同步擁有 20px 的圓角！ */
+  /* 這樣就能把原本漏出來、尖尖的黑色直角底色完完全全「裁切隱形」掉！ */
+  border-radius: 0 0 20px 20px; 
 }
-.kv-image { width: 100%; height: 100%; object-fit: cover; }
+.kv-image { width: 100%; height: 100%; object-fit: cover; border-radius: 0 0 20px 20px; }
 
 /* 🌟 【已修改】絕對座標對齊：強制所有去背小動物與封面圖圖層大小完全重疊 */
 .kv-animal {
@@ -605,27 +609,33 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 /* 1. 封面卡片內左上角 Logo（利用絕對定位釘死） */
 .brand-logo-cover-in {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 75px;   /* 直式在圖內做小小的，精緻不搶戲 */
+  top: -15px;
+  left: -15px;
+  width: 75px;   /* 大小 */
   height: auto;
   z-index: 5;    /* 確保堆疊在封面底圖之上 */
 }
 
 /* 2. QA 頁面卡片外置中大 Logo */
 .brand-logo-qa-center {
-  width: 90px;  
+  position: absolute;
+  top: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;  
   height: auto;
-  margin: -80px auto 25px;
   display: block;
 }
 
 /* 3. 結果頁面卡片外左上角 Logo */
 .brand-logo-result-left {
-  width: 48px;   /* 靠左款維持優雅內斂尺寸 */
+  position: absolute;
+  top: 30px;
+  left: 35px;
+  width: 70px;
   height: auto;
-  margin: -35px auto 15px 0;
   display: block;
 }
+
 
 </style>
