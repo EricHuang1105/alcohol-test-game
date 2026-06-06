@@ -37,7 +37,7 @@
       
       <div v-else-if="step === 'quiz'" :key="'quiz'" style="width: 100%; position: relative;">
         
-        <img :src="logo" alt="CHAME CHILL" class="brand-logo-qa-center">
+        <img :src="logo" alt="CHAME CHILL" class="fixed-brand-logo">
         
         <div class="card quiz-page-card">
           <div class="progress-bar">
@@ -617,26 +617,44 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 }
 
 /* 2. QA 頁面卡片外置中大 Logo */
-.brand-logo-qa-center {
-  position: absolute;
+.fixed-brand-logo, 
+.brand-logo-result-left {
+  position: fixed;
   top: -150px;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;  
   height: auto;
   display: block;
-  z-index: 50;
+  z-index: 100;
+  pointer-events: none;
 }
 
 /* 3. 結果頁面卡片外左上角 Logo */
 .brand-logo-result-left {
   position: absolute;
   top: 15px;
-  left: 15px;
+  left: 50px;
   width: 70px;
   height: auto;
   display: block;
 }
 
+/* 新的 Logo 固定樣式 */
+.fixed-brand-logo {
+  position: fixed;        /* 鎖定位置，不會隨滾動或內容變化而移動 */
+  top: 20px;              /* 距離螢幕最上方 20px */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;            /* 設定你喜歡的大小 */
+  height: auto;
+  z-index: 100;           /* 確保在最上層 */
+  pointer-events: none;
+}
+
+/* 確保卡片內容不會被 Logo 擋住 */
+.quiz-page-card {
+  margin-top: 80px !important; /* 騰出空間給上面的 Logo */
+}
 
 </style>
