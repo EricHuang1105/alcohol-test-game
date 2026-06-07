@@ -106,7 +106,8 @@
           下載我的微醺精靈卡
         </button>
 
-        <button v-if="!isGenerating" @click="openCamera" class="btn btn-share" style="background-color: #c57900;">
+        <button v-if="!isGenerating" @click="openCamera" class="btn btn-share" style="background-color: #e77d0c;">
+          <img :src="cameraIcon" alt="相機" class="btn-icon">
           和我的微醺精靈拍張照
         </button>
 
@@ -161,7 +162,7 @@ import img4 from './assets/result_4.webp'
 import img5 from './assets/result_5.webp'
 
 import downloadIcon from './assets/icon-download.png'
-import shareIcon from './assets/icon-share.png'
+import cameraIcon from './assets/icon-camera.png'
 import giftIcon from './assets/icon-gift.png'
 import logo from './assets/logo.png'
 import bgmFile from './assets/bgm.mp3'
