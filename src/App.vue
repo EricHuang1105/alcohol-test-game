@@ -106,13 +106,13 @@
           下載我的微醺精靈卡
         </button>
 
-        <button v-if="!isGenerating" @click="openCamera" class="btn btn-share" style="background-color: #6b8e23;">
+        <button v-if="!isGenerating" @click="openCamera" class="btn btn-share" style="background-color: #c57900;">
           和我的微醺精靈拍張照
         </button>
 
         <button v-if="!isGenerating" @click="handleGoToStore" class="btn">
           <img :src="giftIcon" alt="禮物" class="btn-icon">
-          把你的微醺精靈帶回家
+          把我的微醺精靈帶回家
         </button>
       </div>
 
@@ -365,7 +365,11 @@ const openCamera = async () => {
   try {
     // 請求前置鏡頭權限
     const stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { facingMode: 'user' } 
+      video: { 
+        facingMode: 'user',
+        width: { ideal: 4096 },  // 故意要求極高的寬度
+        height: { ideal: 2160 }  // 故意要求極高的高度
+      } 
     });
     
     // 確保 Vue 已經渲染了 video 標籤後，再將影像流灌入
