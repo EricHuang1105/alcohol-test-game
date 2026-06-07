@@ -396,37 +396,58 @@ const closeCamera = () => {
   step.value = 'result'; // 返回結果頁
 }
 
-// 📸 拍照與合成下載
+// 📸 拍照與合成下載 (完美比例裁切版)
 const takePhoto = () => {
   playClickSound();
   const video = videoRef.value;
   if (!video) return;
 
-  // 建立虛擬畫布，大小與相機實際抓到的解析度相同
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-
-  // ⚠️ 鏡像魔法 1：因為前鏡頭預覽是反的 (像照鏡子)，畫到 canvas 時必須水平翻轉
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  // ⚠️ 鏡像魔法 2：把畫布矩陣翻轉回來！否則接下來畫上去的相框文字也會變成左右顛倒
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-  // 載入對應結果的相框，並蓋在人物上方
+  // ⚠️ 改變邏輯：先載入相框，用「相框的真實大小」來決定畫布大小
   const frameImg = new Image();
-  // 加上 crossorigin 設定，避免某些瀏覽器在繪製外部圖片時產生跨網域 (CORS) 污染錯誤
   frameImg.crossOrigin = "anonymous";
-  frameImg.src = resultData.value.frame; // 抓取當前結果對應的相框圖片
-  
+  frameImg.src = resultData.value.frame;
+
   frameImg.onload = () => {
-    // 將透明相框畫滿整個畫布
+    // 1. 建立虛擬畫布 (尺寸完全對齊相框原圖，保證不變形！)
+    const canvas = document.createElement('canvas');
+    canvas.width = frameImg.width;
+    canvas.height = frameImg.height;
+    const ctx = canvas.getContext('2d');
+
+    // 2. 計算影片要如何「裁切填滿 (object-fit: cover)」畫布
+    const videoRatio = video.videoWidth / video.videoHeight;
+    const canvasRatio = canvas.width / canvas.height;
+    let drawWidth, drawHeight, startX, startY;
+
+    if (videoRatio > canvasRatio) {
+      // 影片比較寬，以高度為基準縮放，裁切掉左右多餘的畫面
+      drawHeight = canvas.height;
+      drawWidth = video.videoWidth * (canvas.height / video.videoHeight);
+      startX = (canvas.width - drawWidth) / 2;
+      startY = 0;
+    } else {
+      // 影片比較高，以寬度為基準縮放，裁切掉上下多餘的畫面
+      drawWidth = canvas.width;
+      drawHeight = video.videoHeight * (canvas.width / video.videoWidth);
+      startX = 0;
+      startY = (canvas.height - drawHeight) / 2;
+    }
+
+    // 3. 處理前鏡頭的鏡像翻轉
+    ctx.save(); // 先存檔當前乾淨的畫布狀態
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+
+    // 4. 畫上影片 (此時影片會被完美置中並裁切)
+    ctx.drawImage(video, startX, startY, drawWidth, drawHeight);
+
+    // 5. 恢復畫布狀態 (把翻轉取消，這樣等一下畫相框文字才不會變鏡像)
+    ctx.restore();
+
+    // 6. 畫上透明相框 (這時候相框是 100% 原圖比例，絕對不會變形)
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-    // 觸發圖片下載 (手機上會提示儲存至照片或檔案)
+    // 7. 觸發圖片下載
     const imgData = canvas.toDataURL('image/png');
     const link = document.createElement('a');
     link.download = `微醺拍貼_${resultData.value.title}.png`;
