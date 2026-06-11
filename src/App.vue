@@ -124,7 +124,7 @@
 <div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
         <h2 class="main-title" style="margin-top:0;">微醺拍貼機</h2>
         
-        <div v-if="!generatedPhoto">
+        <div v-show="!generatedPhoto">
           <div class="camera-wrapper">
             <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
             <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
@@ -135,7 +135,7 @@
           </div>
         </div>
 
-        <div v-else>
+        <div v-show="generatedPhoto">
           <div class="generated-photo-wrapper">
             <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
           </div>
@@ -421,11 +421,11 @@ const openCamera = async () => {
     });
     
     // 確保 Vue 已經渲染了 video 標籤後，再將影像流灌入
-    nextTick(() => {
-      if (videoRef.value) {
-        videoRef.value.srcObject = stream;
-      }
-    });
+    setTimeout(() => {
+        if (videoRef.value) {
+          videoRef.value.srcObject = stream;
+        }
+      }, 400);
   } catch (err) {
     console.error("相機權限錯誤:", err);
     alert("無法開啟相機，請確認您已允許瀏覽器使用相機權限喔！");
@@ -444,6 +444,13 @@ const closeCamera = () => {
 }
 
 // 📸 拍照與合成下載 (完美比例裁切版)
+
+// 重拍按鈕邏輯
+const retakePhoto = () => {
+  playClickSound();
+  generatedPhoto.value = null; // 把照片清空，畫面就會自動切回相機預覽了
+}
+
 const takePhoto = () => {
   playClickSound();
   const video = videoRef.value;
