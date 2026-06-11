@@ -45,6 +45,7 @@
           </div>
           <p class="q-count">Question {{ currentQuestion + 1 }} / {{ questions.length }}</p>
           <h3 class="q-text">{{ questions[currentQuestion].text }}</h3>
+          
           <div class="options">
             <button 
               v-for="(opt, i) in questions[currentQuestion].options" 
@@ -55,10 +56,13 @@
               {{ opt.text }}
             </button>
           </div>
-        </div>
-      </div>
+          
+          <button v-if="currentQuestion > 0" @click="handlePrevQuestion" class="btn-prev">
+            返回上一題
+          </button>
+       
 
-      <div v-else-if="step === 'loading'" :key="'loading'" class="card loading-card">
+      </div> </div> <div v-else-if="step === 'loading'" :key="'loading'" class="card loading-card">
         <div class="video-container">
           <video 
             src="/chamei_shake.mp4" 
@@ -119,14 +123,27 @@
 
 <div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
         <h2 class="main-title" style="margin-top:0;">微醺拍貼機</h2>
-        <div class="camera-wrapper">
-          <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
-          <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
-        </div>
         
-        <div style="margin-top: 20px;">
-          <button @click="takePhoto" class="btn">喀嚓！存入手機相簿</button>
-          <button @click="closeCamera" class="btn btn-outline">返回結果</button>
+        <div v-if="!generatedPhoto">
+          <div class="camera-wrapper">
+            <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
+            <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
+          </div>
+          <div style="margin-top: 20px;">
+            <button @click="takePhoto" class="btn">喀嚓！拍照</button>
+            <button @click="closeCamera" class="btn btn-outline">返回結果</button>
+          </div>
+        </div>
+
+        <div v-else>
+          <div class="generated-photo-wrapper">
+            <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
+          </div>
+          <p class="save-hint">請長按上方圖片，選擇「儲存影像」存入相簿</p>
+          <div style="margin-top: 20px;">
+            <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
+            <button @click="closeCamera" class="btn">返回結果</button>
+          </div>
         </div>
       </div>
 
@@ -189,6 +206,7 @@ const step = ref('start-page')
 const isAgeModalOpen = ref(false)
 const currentQuestion = ref(0)
 const totalScore = ref(0)
+const scoreHistory = ref([]) // 🌟 新增這行：用來記錄每一題得幾分，方便退回時扣除
 const isMuted = ref(false)
 const hasWatchedIntro = ref(false) // 是否已經看過開場動物動畫
 const isAgeVerified = ref(false)   // 是否已經驗證過 18 歲
@@ -249,6 +267,7 @@ const resultData = computed(() => {
 
 const videoRef = ref(null)
 const isCameraActive = ref(false)
+const generatedPhoto = ref(null) // 用來裝合成好的那張照片
 
 // 6. 結果圖下載
 
@@ -316,7 +335,7 @@ const handleShare = async () => {
   } catch (err) { console.log('分享失敗:', err); }
 };
 
-// 🌟 修改開頭按鈕：如果驗證過了，直接跳到測驗，不用再開彈窗
+// 修改開頭按鈕：如果驗證過了，直接跳到測驗，不用再開彈窗
 const handleOpenAgeModal = () => { 
   playClickSound(); 
   if (isAgeVerified.value) {
@@ -328,29 +347,48 @@ const handleOpenAgeModal = () => {
     isAgeModalOpen.value = true; 
   }
 }
-// 🌟 修改確認年齡：點下「是」之後，把驗證狀態改成 true
+// 修改確認年齡：點下「是」之後，把驗證狀態改成 true
 const handleConfirmAge = () => { 
   playClickSound(); 
   isAgeModalOpen.value = false; 
-  isAgeVerified.value = true; // 👈 標記為已驗證
+  isAgeVerified.value = true; // 標記為已驗證
   step.value = 'quiz';
   if (!isMuted.value) { bgm.play().catch(()=>{}); }
 }
 const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿飲酒。"); }
+// 點擊選項 (下一題)
 const handleOptionClick = (score) => {
-  playClickSound(); totalScore.value += score;
-  if (currentQuestion.value < questions.length - 1) { currentQuestion.value++; } 
-  else { step.value = 'loading'; setTimeout(() => { step.value = 'result' }, 3000); }
+  playClickSound(); 
+  scoreHistory.value.push(score); // 1. 把這題的分數存進歷史紀錄
+  totalScore.value += score;      // 2. 加上總分
+  
+  if (currentQuestion.value < questions.length - 1) { 
+    currentQuestion.value++; 
+  } else { 
+    step.value = 'loading'; 
+    setTimeout(() => { step.value = 'result' }, 3000); 
+  }
+}
+
+// 返回上一題的邏輯
+const handlePrevQuestion = () => {
+  playClickSound();
+  if (currentQuestion.value > 0) {
+    currentQuestion.value--;                    // 1. 題號減一
+    const lastScore = scoreHistory.value.pop(); // 2. 從紀錄中拿出上一題的分數並移除
+    totalScore.value -= lastScore;              // 3. 把總分扣掉這個分數，完美還原！
+  }
 }
 const handleReset = () => {  
   playClickSound(); 
   step.value = 'start-page'; 
   currentQuestion.value = 0; 
   totalScore.value = 0; 
+  scoreHistory.value = []; // 重新測驗時清空歷史紀錄
   bgm.pause(); 
   bgm.currentTime = 0;
   
-  hasWatchedIntro.value = true; // 👈 重置時，強迫標記為「已看過動畫」
+  hasWatchedIntro.value = true; // 重置時，強迫標記為「已看過動畫」
 }
 const handleGoToStore = () => { playClickSound(); window.location.href = "https://18brew.com.tw/product-category/tea_plum_wine/"; }
 
@@ -362,7 +400,8 @@ const handleGoToStore = () => { playClickSound(); window.location.href = "https:
 const openCamera = async () => {
   playClickSound();
   step.value = 'camera'; // 切換到相機頁面
-  
+  generatedPhoto.value = null; // 確保每次進來都是乾淨的相機畫面
+
   try {
     // 請求前置鏡頭權限
     const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -399,8 +438,8 @@ const closeCamera = () => {
 // 📸 拍照與合成下載 (完美比例裁切版)
 const takePhoto = () => {
   playClickSound();
-  const video = videoRef.value;
-  if (!video) return;
+  generatedPhoto.value = null; // 把照片清空，畫面就會自動切回相機預覽了
+}
 
   // ⚠️ 改變邏輯：先載入相框，用「相框的真實大小」來決定畫布大小
   const frameImg = new Image();
@@ -448,13 +487,10 @@ const takePhoto = () => {
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
     // 7. 觸發圖片下載
-    const imgData = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.download = `微醺拍貼_${resultData.value.title}.png`;
-    link.href = imgData;
-    link.click();
+    generatedPhoto.value = canvas.toDataURL('image/png');
+   
   };
-}
+
 
 </script>
 
@@ -825,6 +861,59 @@ const takePhoto = () => {
   object-fit: cover;    /* 確保相框圖檔也能完美貼合容器大小 */
   pointer-events: none; /* 讓使用者的點擊能穿透相框，避免干擾底層的互動 */
   z-index: 10;          /* 確保相框疊在攝影機畫面 (video) 的上方 */
+}
+
+/* 🌟 返回上一題按鈕的專屬樣式 */
+.btn-prev {
+  background: none;
+  border: none;
+  color: #999;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 14px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.btn-prev:hover {
+  color: #8b4513; /* 滑鼠移過去時變成品牌咖啡色 */
+}
+
+/* ===================================================
+   🌟 生成照片與長按提示專屬設定
+   =================================================== */
+
+.generated-photo-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4; /* 與相機框保持一致比例 */
+  margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15); /* 加深陰影，讓照片看起來有實體感 */
+}
+
+.final-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.save-hint {
+  color: #dc5b00; /* 使用品牌顯眼的橘黃色 */
+  font-weight: bold;
+  font-size: 15px;
+  margin-top: 20px;
+  animation: pulseHint 1.5s infinite; /* 加上呼吸燈動畫吸引目光 */
+}
+
+@keyframes pulseHint {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.03); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 </style>
