@@ -278,38 +278,46 @@ const handleDownloadCard = async () => {
   playClickSound();
   if (!resultCardRef.value) return;
 
-  // 1. 魔法開始：先把按鈕藏起來
-  isGenerating.value = true; 
-  
-  // 2. 【關鍵修正】放棄 nextTick，改用 setTimeout 強制等瀏覽器 0.15 秒
-  // 讓瀏覽器有絕對充足的時間把按鈕從畫面上清空，再按下快門！
-  await new Promise(resolve => setTimeout(resolve, 150)); 
+  isGenerating.value = true;
+  await new Promise(resolve => setTimeout(resolve, 150));
 
   try {
     const canvas = await html2canvas(resultCardRef.value, {
-      scale: 4, // 🌟 倍率直接拉到 4，保證在手機上看也跟視網膜螢幕一樣銳利
+      scale: 4, 
       useCORS: true,
       backgroundColor: '#ffffff'
     });
 
-    // 3. 【關鍵修正】捨棄 JPG 壓縮，改存成無損的 PNG 格式
-    const imgData = canvas.toDataURL('image/png'); 
+    const imgData = canvas.toDataURL('image/png');
 
-    const link = document.createElement('a');
-    link.download = `我的微醺精靈_${resultData.value.title}.png`; // 這裡也改成 .png
-    link.href = imgData;
-    link.click();
-    
+    // 🌟 魔法轉換：將圖片轉換成手機看得懂的「真實檔案 (File)」
+    const blob = await (await fetch(imgData)).blob();
+    const file = new File([blob], `我的微醺精靈_${resultData.value.title}.png`, { type: 'image/png' });
+
+    // 🌟 判斷裝置是否支援呼叫「原生分享面板」
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      // 📱 手機端：喚起原生分享面板，讓使用者點擊「儲存影像」
+      await navigator.share({
+        files: [file],
+        title: '我的微醺精靈卡',
+      });
+    } else {
+      // 💻 電腦端或舊瀏覽器：維持原本的強制下載方式
+      const link = document.createElement('a');
+      link.download = `我的微醺精靈_${resultData.value.title}.png`;
+      link.href = imgData;
+      link.click();
+    }
+
   } catch (error) {
     console.error("生成圖片失敗:", error);
     alert("圖片生成失敗，請稍後再試！");
   } finally {
-    // 4. 魔法結束：不管成功或失敗，截圖完馬上把按鈕變回來
-    isGenerating.value = false; 
+    isGenerating.value = false;
   }
 }
 // 7. 互動方法
-// 🌟 終極優化版：自動幫網址綁上「不重複的小尾巴（時間戳記）」，強迫 LINE 吐出預覽圖
+// 自動幫網址綁上「不重複的小尾巴（時間戳記）」，強迫 LINE 吐出預覽圖
 const handleShare = async () => {
   playClickSound();
   
@@ -438,10 +446,10 @@ const closeCamera = () => {
 // 📸 拍照與合成下載 (完美比例裁切版)
 const takePhoto = () => {
   playClickSound();
-  generatedPhoto.value = null; // 把照片清空，畫面就會自動切回相機預覽了
-}
+  const video = videoRef.value;
+  if (!video) return; // 如果沒抓到鏡頭畫面，就中止
 
-  // ⚠️ 改變邏輯：先載入相框，用「相框的真實大小」來決定畫布大小
+  // 先載入相框，用「相框的真實大小」來決定畫布大小
   const frameImg = new Image();
   frameImg.crossOrigin = "anonymous";
   frameImg.src = resultData.value.frame;
@@ -453,19 +461,17 @@ const takePhoto = () => {
     canvas.height = frameImg.height;
     const ctx = canvas.getContext('2d');
 
-    // 2. 計算影片要如何「裁切填滿 (object-fit: cover)」畫布
+    // 2. 計算影片要如何「裁切填滿」畫布
     const videoRatio = video.videoWidth / video.videoHeight;
     const canvasRatio = canvas.width / canvas.height;
     let drawWidth, drawHeight, startX, startY;
 
     if (videoRatio > canvasRatio) {
-      // 影片比較寬，以高度為基準縮放，裁切掉左右多餘的畫面
       drawHeight = canvas.height;
       drawWidth = video.videoWidth * (canvas.height / video.videoHeight);
       startX = (canvas.width - drawWidth) / 2;
       startY = 0;
     } else {
-      // 影片比較高，以寬度為基準縮放，裁切掉上下多餘的畫面
       drawWidth = canvas.width;
       drawHeight = video.videoHeight * (canvas.width / video.videoWidth);
       startX = 0;
@@ -473,24 +479,21 @@ const takePhoto = () => {
     }
 
     // 3. 處理前鏡頭的鏡像翻轉
-    ctx.save(); // 先存檔當前乾淨的畫布狀態
+    ctx.save(); 
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
 
-    // 4. 畫上影片 (此時影片會被完美置中並裁切)
+    // 4. 畫上影片 
     ctx.drawImage(video, startX, startY, drawWidth, drawHeight);
-
-    // 5. 恢復畫布狀態 (把翻轉取消，這樣等一下畫相框文字才不會變鏡像)
     ctx.restore();
 
-    // 6. 畫上透明相框 (這時候相框是 100% 原圖比例，絕對不會變形)
+    // 5. 畫上透明相框
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-    // 7. 觸發圖片下載
+    // 🌟 6. 賦值給畫面的變數，觸發「長按儲存」的 UI
     generatedPhoto.value = canvas.toDataURL('image/png');
-   
   };
-
+}
 
 </script>
 
