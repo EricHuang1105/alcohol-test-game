@@ -130,7 +130,7 @@
             <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
           </div>
           <div style="margin-top: 20px;">
-            <button @click="takePhoto" class="btn">喀嚓！拍照</button>
+            <button @click="takePhoto" class="btn">📸喀嚓!</button>
             <button @click="closeCamera" class="btn btn-outline">返回結果</button>
           </div>
         </div>
@@ -139,7 +139,7 @@
           <div class="generated-photo-wrapper">
             <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
           </div>
-          <p class="save-hint">請長按上方圖片，選擇「儲存影像」存入相簿</p>
+          <p class="save-hint">長按圖片可以儲存/分享圖片哦!</p>
           <div style="margin-top: 20px;">
             <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
             <button @click="closeCamera" class="btn">返回結果</button>
