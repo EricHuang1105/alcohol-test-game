@@ -130,7 +130,7 @@
             <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
           </div>
           <div style="margin-top: 20px;">
-            <button @click="takePhoto" class="btn">📸喀嚓!</button>
+            <button @click="takePhoto" class="btn">咔嚓📸</button>
             <button @click="closeCamera" class="btn btn-outline">返回結果</button>
           </div>
         </div>
@@ -398,7 +398,11 @@ const handleReset = () => {
   
   hasWatchedIntro.value = true; // 重置時，強迫標記為「已看過動畫」
 }
-const handleGoToStore = () => { playClickSound(); window.location.href = "https://18brew.com.tw/product-category/tea_plum_wine/"; }
+// 改用 window.open 並加上 "_blank"，讓商城在新的分頁開啟
+const handleGoToStore = () => { 
+  playClickSound(); 
+  window.open("https://18brew.com.tw/product-category/tea_plum_wine/", "_blank"); 
+}
 
 // ==========================================
 // 8. 拍立得 (相機與合成邏輯)
