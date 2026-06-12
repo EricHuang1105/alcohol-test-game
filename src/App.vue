@@ -139,6 +139,20 @@
           <div class="generated-photo-wrapper">
             <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
           </div>
+
+<div class="input-word-section">
+            <label for="photo-input">在這裡留個言吧：</label>
+            <input 
+              id="photo-input"
+              v-model="userText" 
+              type="text" 
+              maxlength="20" 
+              placeholder="20 字上限"
+              class="custom-photo-input"
+              @input="takePhoto" 
+            />
+            </div>
+
           <p class="save-hint">長按圖片可以儲存/分享圖片哦!</p>
           <div style="margin-top: 20px;">
             <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
@@ -268,6 +282,7 @@ const resultData = computed(() => {
 const videoRef = ref(null)
 const isCameraActive = ref(false)
 const generatedPhoto = ref(null) // 用來裝合成好的那張照片
+const userText = ref('') // 用來綁定使用者輸入的客製化文字
 
 // 6. 結果圖下載
 
@@ -413,6 +428,7 @@ const openCamera = async () => {
   playClickSound();
   step.value = 'camera'; // 切換到相機頁面
   generatedPhoto.value = null; // 確保每次進來都是乾淨的相機畫面
+  userText.value = ''; // 每次進來拍貼機，都把文字輸入框清空
 
   try {
     // 請求前置鏡頭權限
@@ -501,7 +517,33 @@ const takePhoto = () => {
     // 5. 畫上透明相框
     ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-    // 🌟 6. 賦值給畫面的變數，觸發「長按儲存」的 UI
+// 7. 檢查使用者有沒有輸入文字，有的話就畫上去！
+    if (userText.value.trim() !== '') {
+      ctx.save();
+      
+      // 📐 設定字體大小與風格（根據你的 1080x1620 解析度，大小設 54px ~ 60px 最剛好）
+      // 如果專案有匯入微軟正黑體或自訂手寫字體，可以寫在這裡
+      ctx.font = "bold 56px 'Microsoft JhengHei', sans-serif"; 
+      
+      // 設定字體顏色（依據上一個話題，我們可以根據不同動物給予不同顏色，這裡先用你紅圈處適合的質感深焦糖色）
+      ctx.fillStyle = "#5a3d28"; 
+      
+      // 設定對齊方式：靠左對齊
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+
+      // 【關鍵對齊座標】把字畫在左下角的紅圈留白處
+      // 這裡的數字可以根據你相框實際的留白位置微調
+      const textX = canvas.width * 0.12;  // 距離左邊 12%
+      const textY = canvas.height * 0.88; // 距離上面 88% (剛好在拍立得下方白框)
+
+      // 正式把文字畫上圖片
+      ctx.fillText(userText.value, textX, textY);
+      
+      ctx.restore();
+    }
+
+    // 7. 賦值給畫面的變數，觸發「長按儲存」的 UI
     generatedPhoto.value = canvas.toDataURL('image/png');
   };
 }
@@ -928,6 +970,48 @@ const takePhoto = () => {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.03); opacity: 0.8; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===================================================
+   🌟 客製化相片輸入框樣式
+   =================================================== */
+
+.input-word-section {
+  margin-top: 15px;
+  text-align: left;
+  padding: 0 5px;
+}
+
+.input-word-section label {
+  display: block;
+  font-size: 14px;
+  color: #8b4513; /* 品牌咖啡色 */
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.custom-photo-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e6d7c3; /* 柔和的木質米色邊框 */
+  border-radius: 12px;
+  font-size: 15px;
+  box-sizing: border-box;
+  background-color: #fffaf0; /* 溫暖偏白 */
+  color: #5a3d28;
+  outline: none;
+  transition: all 0.3s;
+}
+
+/* 輸入框聚焦時變色 */
+.custom-photo-input:focus {
+  border-color: #8b4513;
+  box-shadow: 0 0 8px rgba(139, 69, 19, 0.15);
+}
+
+/* 暫位文字顏色 */
+.custom-photo-input::placeholder {
+  color: #c4b39e;
 }
 
 </style>
