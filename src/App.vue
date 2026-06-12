@@ -146,10 +146,10 @@
               id="photo-input"
               v-model="userText" 
               type="text" 
-              maxlength="20" 
-              placeholder="20 字上限"
+              maxlength="16" 
+              placeholder="16 字上限"
               class="custom-photo-input"
-              @input="takePhoto" 
+              :style="{ color: resultData.textColor }" @input="takePhoto" 
             />
             </div>
 
@@ -272,11 +272,11 @@ const questions = [
 // 5. 結果判定
 const resultData = computed(() => {
   const s = totalScore.value
-  if (s <= 10) return { title: "穿山甲精靈", image: img1, frame: frame1, desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
-  if (s <= 14) return { title: "白面鼯鼠精靈", image: img2, frame: frame2, desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
-  if (s <= 17) return { title: "白鼻心精靈", image: img3, frame: frame3, desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
-  if (s <= 21) return { title: "石虎精靈", image: img4, frame: frame4, desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
-  return { title: "台灣藍鵲精靈", image: img5, frame: frame5, desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
+  if (s <= 10) return { title: "穿山甲精靈", image: img1, frame: frame1, textColor: "#e6be51", desc: "你極度需要合法擺爛！面對高壓的世界，只想把自己捲成一顆球，把吵鬧都擋在外面。對你來說，最好的放鬆就是切斷與世界的連結。", guide: "來一杯「熷茶梅酒」，讓溫潤的底蘊陪伴你合法擺爛!" }
+  if (s <= 14) return { title: "白面鼯鼠精靈", image: img2, frame: frame2, textColor: "#a29a96", desc: "你極度渴望 Me Time！你喜歡在自己的空間裡獨處，在深夜裡思緒像在山林間自由滑翔。微醺對你來說，是清空腦袋資訊垃圾、沉澱內心的必要儀式。", guide: "深夜的 Me Time，有「凍頂烏龍茶梅酒」的陪伴，讓思緒像在山林間自由滑翔! " }
+  if (s <= 17) return { title: "白鼻心精靈", image: img3, frame: frame3, textColor: "#6f4d38", desc: "你能在高壓中尋求踏實成就感！你認命且負責，總是能把任務進度條推到 100%。你最享受的，就是完成艱難任務後，慵懶趴在桌上體會的那份微小而扎實的成就感。", guide: "達成任務最需要慶祝，用「蜜香紅烏龍茶梅酒」犒賞剛完成進度條的自己吧! " }
+  if (s <= 21) return { title: "石虎精靈", image: img4, frame: frame4, textColor: "#6a704a", desc: "你具備極高的審美自信！你不想在人群中顯得平庸，透過質感小物能讓你找回對生活的驕傲與自信。", guide: "審美與質感，是你的生活驕傲，如同「東方美人茶梅酒」的芬芳，優雅而不流俗。" }
+  return { title: "台灣藍鵲精靈", image: img5, frame: frame5, textColor: "#d8d0be", desc: "你極度需要群居歸屬感，而且超級悶騷！表面可能裝作淡定，內心很需要他人的陪伴與認同，微醺是你轉開真心話的鑰匙。", guide: "「玉香綠茶梅酒」是幫你轉開真心話的最佳幫手!" }
 })
 
 const videoRef = ref(null)
@@ -544,13 +544,33 @@ const takePhoto = () => {
       if (userText.value.trim() !== '') {
         ctx.save();
         ctx.font = "bold 56px 'Microsoft JhengHei', sans-serif";
-        ctx.fillStyle = "#5a3d28";
+        // 改成動態抓取當前動物精靈對應的字體顏色！
+        ctx.fillStyle = resultData.value.textColor;
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         
-        const textX = canvas.width * 0.12;  
-        const textY = canvas.height * 0.88; 
-        ctx.fillText(userText.value, textX, textY);
+        const textX = canvas.width * 0.12;
+
+        // 將一整串字切成兩行（每行最多 8 個字）
+        const line1 = userText.value.slice(0, 8);  // 第 1 到第 8 字
+        const line2 = userText.value.slice(8, 16); // 第 9 到第 16 字（自動限制最大 16 字）
+
+        if (line2) {
+          // 💡 情況 A：有輸入到第九個字以上，需要畫兩行
+          // 我們把原本的單行位置微調，讓第一行往上飄一點，第二行往下挪一點
+          const lineGap = 64; // 兩行字之間的行距 (像素)
+          
+          const line1Y = (canvas.height * 0.88) - (lineGap / 2); // 第一行略高
+          const line2Y = (canvas.height * 0.88) + (lineGap / 2); // 第二行略低
+          
+          ctx.fillText(line1, textX, line1Y);
+          ctx.fillText(line2, textX, line2Y);
+        } else {
+          // 💡 情況 B：只有 8 個字以內，維持原本的完美置中單行高度
+          const singleLineY = canvas.height * 0.88;
+          ctx.fillText(line1, textX, singleLineY);
+        }
+        
         ctx.restore();
       }
 
