@@ -283,6 +283,7 @@ const videoRef = ref(null)
 const isCameraActive = ref(false)
 const generatedPhoto = ref(null) // 用來裝合成好的那張照片
 const userText = ref('') // 用來綁定使用者輸入的客製化文字
+const rawCapture = ref(null) // 用來暫存照片，防止打字跑版
 
 // 6. 結果圖下載
 
@@ -468,86 +469,96 @@ const closeCamera = () => {
 // 重拍按鈕邏輯
 const retakePhoto = () => {
   playClickSound();
-  generatedPhoto.value = null; // 把照片清空，畫面就會自動切回相機預覽了
+  generatedPhoto.value = null; // 把照片清空
+  rawCapture.value = null;
 }
 
 const takePhoto = () => {
   playClickSound();
   const video = videoRef.value;
-  if (!video) return; // 如果沒抓到鏡頭畫面，就中止
+  if (!video) return;
 
-  // 先載入相框，用「相框的真實大小」來決定畫布大小
   const frameImg = new Image();
   frameImg.crossOrigin = "anonymous";
   frameImg.src = resultData.value.frame;
 
   frameImg.onload = () => {
-    // 1. 建立虛擬畫布 (尺寸完全對齊相框原圖，保證不變形！)
+    // 1. 建立虛擬畫布
     const canvas = document.createElement('canvas');
     canvas.width = frameImg.width;
     canvas.height = frameImg.height;
     const ctx = canvas.getContext('2d');
 
-    // 2. 計算影片要如何「裁切填滿」畫布
-    const videoRatio = video.videoWidth / video.videoHeight;
-    const canvasRatio = canvas.width / canvas.height;
-    let drawWidth, drawHeight, startX, startY;
+    // ===================================================
+    // 📸 情況 A：第一次按下「喀嚓」按鈕 (此時 rawCapture 是空的)
+    // ===================================================
+    if (!rawCapture.value) {
+      // 建立一個只有人臉的獨立虛擬畫布，把這一瞬間定格下來
+      const faceCanvas = document.createElement('canvas');
+      faceCanvas.width = canvas.width;
+      faceCanvas.height = canvas.height;
+      const faceCtx = faceCanvas.getContext('2d');
 
-    if (videoRatio > canvasRatio) {
-      drawHeight = canvas.height;
-      drawWidth = video.videoWidth * (canvas.height / video.videoHeight);
-      startX = (canvas.width - drawWidth) / 2;
-      startY = 0;
-    } else {
-      drawWidth = canvas.width;
-      drawHeight = video.videoHeight * (canvas.width / video.videoWidth);
-      startX = 0;
-      startY = (canvas.height - drawHeight) / 2;
+      // 計算影片裁切比例
+      const videoRatio = video.videoWidth / video.videoHeight;
+      const canvasRatio = canvas.width / canvas.height;
+      let drawWidth, drawHeight, startX, startY;
+
+      if (videoRatio > canvasRatio) {
+        drawHeight = canvas.height;
+        drawWidth = video.videoWidth * (canvas.height / video.videoHeight);
+        startX = (canvas.width - drawWidth) / 2;
+        startY = 0;
+      } else {
+        drawWidth = canvas.width;
+        drawHeight = video.videoHeight * (canvas.width / video.videoWidth);
+        startX = 0;
+        startY = (canvas.height - drawHeight) / 2;
+      }
+
+      // 處理鏡像並把人臉畫上去
+      faceCtx.save();
+      faceCtx.translate(faceCanvas.width, 0);
+      faceCtx.scale(-1, 1);
+      faceCtx.drawImage(video, startX, startY, drawWidth, drawHeight);
+      faceCtx.restore();
+
+      // 把這一瞬間純人臉的 Base64 牢牢存起來，從此相機關掉也不怕
+      rawCapture.value = faceCanvas.toDataURL('image/png');
     }
 
-    // 3. 處理前鏡頭的鏡像翻轉
-    ctx.save(); 
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
+    // ===================================================
+    // 🎨 開始正式疊加合成 (不論是拍照還是打字，都用穩定的圖層)
+    // ===================================================
+    const savedFaceImg = new Image();
+    savedFaceImg.src = rawCapture.value;
+    
+    savedFaceImg.onload = () => {
+      // 圖層 1：畫上剛剛定格下來的清晰人臉
+      ctx.drawImage(savedFaceImg, 0, 0, canvas.width, canvas.height);
 
-    // 4. 畫上影片 
-    ctx.drawImage(video, startX, startY, drawWidth, drawHeight);
-    ctx.restore();
+      // 圖層 2：畫上透明相框
+      ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
 
-    // 5. 畫上透明相框
-    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+      // 圖層 3：檢查並繪製使用者文字
+      if (userText.value.trim() !== '') {
+        ctx.save();
+        ctx.font = "bold 56px 'Microsoft JhengHei', sans-serif";
+        ctx.fillStyle = "#5a3d28";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        
+        const textX = canvas.width * 0.12;  
+        const textY = canvas.height * 0.88; 
+        ctx.fillText(userText.value, textX, textY);
+        ctx.restore();
+      }
 
-// 7. 檢查使用者有沒有輸入文字，有的話就畫上去！
-    if (userText.value.trim() !== '') {
-      ctx.save();
-      
-      // 📐 設定字體大小與風格（根據你的 1080x1620 解析度，大小設 54px ~ 60px 最剛好）
-      // 如果專案有匯入微軟正黑體或自訂手寫字體，可以寫在這裡
-      ctx.font = "bold 56px 'Microsoft JhengHei', sans-serif"; 
-      
-      // 設定字體顏色（依據上一個話題，我們可以根據不同動物給予不同顏色，這裡先用你紅圈處適合的質感深焦糖色）
-      ctx.fillStyle = "#5a3d28"; 
-      
-      // 設定對齊方式：靠左對齊
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-
-      // 【關鍵對齊座標】把字畫在左下角的紅圈留白處
-      // 這裡的數字可以根據你相框實際的留白位置微調
-      const textX = canvas.width * 0.12;  // 距離左邊 12%
-      const textY = canvas.height * 0.88; // 距離上面 88% (剛好在拍立得下方白框)
-
-      // 正式把文字畫上圖片
-      ctx.fillText(userText.value, textX, textY);
-      
-      ctx.restore();
-    }
-
-    // 7. 賦值給畫面的變數，觸發「長按儲存」的 UI
-    generatedPhoto.value = canvas.toDataURL('image/png');
+      // 輸出最終成品
+      generatedPhoto.value = canvas.toDataURL('image/png');
+    };
   };
 }
-
 </script>
 
 <style scoped>
