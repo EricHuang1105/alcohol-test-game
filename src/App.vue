@@ -467,7 +467,7 @@ const closeCamera = () => {
 // 📸 拍照與合成下載 (完美比例裁切版)
 
 // 重拍按鈕邏輯
-const re = () => {
+const retakePhoto = () => {
   playClickSound();
   generatedPhoto.value = null; // 把照片清空
   rawCapture.value = null;
