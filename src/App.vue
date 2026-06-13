@@ -126,7 +126,7 @@
         <h2 v-if="!generatedPhoto" class="main-title" style="margin-top:0;">微醺拍貼機</h2>
         
         <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38;">
-          長按圖片可以儲存/分享圖片哦!
+          長按圖片可以儲存/分享哦!
         </h2>
         
         <div v-show="!generatedPhoto">
@@ -331,6 +331,13 @@ const handleDownloadCard = async () => {
     }
 
   } catch (error) {
+    // 🌟 新增判斷：如果是使用者自己關閉或取消分享面板，就默默結束，不要報錯！
+    if (error.name === 'AbortError') {
+      console.log("使用者取消了分享或儲存動作");
+      return; 
+    }
+    
+    // 如果是真的生成失敗，才跳出警告
     console.error("生成圖片失敗:", error);
     alert("圖片生成失敗，請稍後再試！");
   } finally {
