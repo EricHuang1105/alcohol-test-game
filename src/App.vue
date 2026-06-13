@@ -89,7 +89,7 @@
       <div v-else-if="step === 'result'" :key="'result'" class="card result-card" ref="resultCardRef" style="position: relative;">
         <img :src="logo" alt="CHAME CHILL" class="brand-logo-result-left">
         <p class="result-pre">你的微醺精靈是</p>
-        <h2 class="result-title">{{ resultData.title }}</h2>
+        <h2 class="result-title" :style="{ color: resultData.textColor }">{{ resultData.title }}</h2>
         
         <div class="result-visual">
           <img :src="resultData.image" :alt="resultData.title" class="spirit-image">
@@ -125,7 +125,7 @@
         
         <h2 v-if="!generatedPhoto" class="main-title" style="margin-top:0;">微醺拍貼機</h2>
         
-        <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38;">
+        <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
           長按圖片可以儲存/分享哦!
         </h2>
         
@@ -555,7 +555,7 @@ const takePhoto = () => {
       // 圖層 3：檢查並繪製使用者文字
       if (userText.value.trim() !== '') {
         ctx.save();
-        ctx.font = "bold 56px 'Microsoft JhengHei', sans-serif";
+        ctx.font = "bold 56px 'MyCustomFont', sans-serif";
         // 改成動態抓取當前動物精靈對應的字體顏色！
         ctx.fillStyle = resultData.value.textColor;
         ctx.textAlign = "left";
@@ -594,6 +594,14 @@ const takePhoto = () => {
 </script>
 
 <style scoped>
+
+@font-face {
+  font-family: 'MyCustomFont'; /* 這是我們給字體取的小名，之後都用這個名字呼叫它 */
+  src: url('./assets/ChenYuluoyan-2.0-Thin.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .container { 
   max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
   padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;
@@ -1060,6 +1068,7 @@ const takePhoto = () => {
 /* 暫位文字顏色 */
 .custom-photo-input::placeholder {
   color: #c4b39e;
+
 }
 
 </style>
