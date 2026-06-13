@@ -122,7 +122,12 @@
       </div>
 
 <div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
-        <h2 class="main-title" style="margin-top:0;">微醺拍貼機</h2>
+        
+        <h2 v-if="!generatedPhoto" class="main-title" style="margin-top:0;">微醺拍貼機</h2>
+        
+        <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38;">
+          長按圖片可以儲存/分享圖片哦!
+        </h2>
         
         <div v-show="!generatedPhoto">
           <div class="camera-wrapper">
@@ -153,7 +158,7 @@
             />
             </div>
 
-          <p class="save-hint">長按圖片可以儲存/分享圖片哦!</p>
+        
           <div style="margin-top: 20px;">
             <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
             <button @click="closeCamera" class="btn">返回結果</button>
