@@ -979,8 +979,8 @@ const takePhoto = () => {
    =================================================== */
 
 .generated-photo-wrapper {
-  width: 100%;
-  aspect-ratio: 3 / 4; /* 與相機框保持一致比例 */
+  aspect-ratio: 1080 / 1294;
+  
   margin: 0 auto;
   border-radius: 15px;
   overflow: hidden;
@@ -990,7 +990,7 @@ const takePhoto = () => {
 .final-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
