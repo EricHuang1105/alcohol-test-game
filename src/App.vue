@@ -921,7 +921,7 @@ const takePhoto = () => {
 .camera-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4; /* 🌟 這是關鍵：強制鎖定成類似 IG 限動或拍立得的直式比例 */
+  aspect-ratio: 2 / 3;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 15px; /* 圓角修飾 */
@@ -945,7 +945,7 @@ const takePhoto = () => {
   left: 0;
   width: 100%; 
   height: 100%;
-  object-fit: cover;    /* 確保相框圖檔也能完美貼合容器大小 */
+  object-fit: contain;    /* 確保相框圖檔也能完美貼合容器大小 */
   pointer-events: none; /* 讓使用者的點擊能穿透相框，避免干擾底層的互動 */
   z-index: 10;          /* 確保相框疊在攝影機畫面 (video) 的上方 */
 }
