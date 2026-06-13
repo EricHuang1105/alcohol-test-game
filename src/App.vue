@@ -467,7 +467,7 @@ const closeCamera = () => {
 // 📸 拍照與合成下載 (完美比例裁切版)
 
 // 重拍按鈕邏輯
-const retakePhoto = () => {
+const re = () => {
   playClickSound();
   generatedPhoto.value = null; // 把照片清空
   rawCapture.value = null;
@@ -554,21 +554,21 @@ const takePhoto = () => {
         // 將一整串字切成兩行（每行最多 8 個字）
         const line1 = userText.value.slice(0, 8);  // 第 1 到第 8 字
         const line2 = userText.value.slice(8, 16); // 第 9 到第 16 字（自動限制最大 16 字）
+        
+        const targetY = canvas.height * 0.855;
 
         if (line2) {
           // 💡 情況 A：有輸入到第九個字以上，需要畫兩行
           // 我們把原本的單行位置微調，讓第一行往上飄一點，第二行往下挪一點
-          const lineGap = 64; // 兩行字之間的行距 (像素)
+          const lineGap = 58; // 兩行字之間的行距 (像素)
           
-          const line1Y = (canvas.height * 0.88) - (lineGap / 2); // 第一行略高
-          const line2Y = (canvas.height * 0.88) + (lineGap / 2); // 第二行略低
+          const line1Y = targetY - (lineGap / 2); // 第一行略高
+          const line2Y = targetY + (lineGap / 2); // 第二行略低
           
           ctx.fillText(line1, textX, line1Y);
           ctx.fillText(line2, textX, line2Y);
         } else {
-          // 💡 情況 B：只有 8 個字以內，維持原本的完美置中單行高度
-          const singleLineY = canvas.height * 0.88;
-          ctx.fillText(line1, textX, singleLineY);
+          ctx.fillText(line1, textX, targetY);
         }
         
         ctx.restore();
@@ -921,7 +921,12 @@ const takePhoto = () => {
 .camera-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;
+
+  /對齊新相框的 1080 x 1294 像素尺寸/
+  --frame-width: 1080;
+  --frame-height: 1294;
+  aspect-ratio: var(--frame-width) / var(--frame-height);
+
   margin: 0 auto;
   overflow: hidden;
   border-radius: 15px; /* 圓角修飾 */
