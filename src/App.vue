@@ -922,7 +922,7 @@ const takePhoto = () => {
   position: relative;
   width: 100%;
 
-  /對齊新相框的 1080 x 1294 像素尺寸/
+  /* 對齊新相框的 1080 x 1294 像素尺寸 */
   --frame-width: 1080;
   --frame-height: 1294;
   aspect-ratio: var(--frame-width) / var(--frame-height);
