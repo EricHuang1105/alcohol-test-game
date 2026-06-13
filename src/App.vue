@@ -147,15 +147,15 @@
 
 <div class="input-word-section">
             <label for="photo-input">在這裡留個言吧：</label>
-            <input 
+            <textarea 
               id="photo-input"
               v-model="userText" 
-              type="text" 
               maxlength="16" 
-              placeholder="16 字上限"
+              rows="2" 
+              placeholder="限 16 字，可按 Enter 換行"
               class="custom-photo-input"
-              :style="{ color: resultData.textColor }" @input="takePhoto" 
-            />
+              @input="takePhoto" 
+            ></textarea>
             </div>
 
         
@@ -555,7 +555,7 @@ const takePhoto = () => {
       // 圖層 3：檢查並繪製使用者文字
       if (userText.value.trim() !== '') {
         ctx.save();
-        ctx.font = "bold 56px 'MyCustomFont', sans-serif";
+        ctx.font = "bold 65px 'MyCustomFont', sans-serif";
         // 改成動態抓取當前動物精靈對應的字體顏色！
         ctx.fillStyle = resultData.value.textColor;
         ctx.textAlign = "left";
@@ -563,24 +563,35 @@ const takePhoto = () => {
         
         const textX = canvas.width * 0.08;
 
-        // 將一整串字切成兩行（每行最多 8 個字）
-        const line1 = userText.value.slice(0, 8);  // 第 1 到第 8 字
-        const line2 = userText.value.slice(8, 16); // 第 9 到第 16 字（自動限制最大 16 字）
+        // 換行機制：讀取使用者手動按 Enter 產生的換行符號 (\n)
+        let lines = [];
+        const rawLines = userText.value.split('\n'); // 依照手動換行來切割字串
         
-        const targetY = canvas.height * 0.88;
+        rawLines.forEach(text => {
+          // 防呆機制：如果使用者忘記按 Enter，且單行打超過 8 個字，依然強制折行以免衝出相框
+          if (text.length > 8) {
+            lines.push(text.slice(0, 8));
+            if (text.slice(8, 16)) lines.push(text.slice(8, 16));
+          } else {
+            lines.push(text);
+          }
+        });
+        
+        // 確保最終最多只會畫出 2 行
+        lines = lines.slice(0, 2);
 
-        if (line2) {
-          // 💡 情況 A：有輸入到第九個字以上，需要畫兩行
-          // 我們把原本的單行位置微調，讓第一行往上飄一點，第二行往下挪一點
-          const lineGap = 58; // 兩行字之間的行距 (像素)
+        const targetY = canvas.height * 0.88; 
+
+        if (lines.length === 2) {
+          const lineGap = 58; 
+          const line1Y = targetY - (lineGap / 2);
+          const line2Y = targetY + (lineGap / 2);
           
-          const line1Y = targetY - (lineGap / 2); // 第一行略高
-          const line2Y = targetY + (lineGap / 2); // 第二行略低
-          
-          ctx.fillText(line1, textX, line1Y);
-          ctx.fillText(line2, textX, line2Y);
-        } else {
-          ctx.fillText(line1, textX, targetY);
+          ctx.fillText(lines[0], textX, line1Y);
+          ctx.fillText(lines[1], textX, line2Y);
+        } else if (lines.length === 1 && lines[0] !== '') {
+          // 只有一行字時，完美垂直置中
+          ctx.fillText(lines[0], textX, targetY);
         }
         
         ctx.restore();
@@ -1057,6 +1068,9 @@ const takePhoto = () => {
   color: #5a3d28;
   outline: none;
   transition: all 0.3s;
+  鎖定文字框大小，避免被亂拉 */
+  resize: none; 
+  overflow: hidden;
 }
 
 /* 輸入框聚焦時變色 */
