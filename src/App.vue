@@ -549,13 +549,13 @@ const takePhoto = () => {
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         
-        const textX = canvas.width * 0.12;
+        const textX = canvas.width * 0.08;
 
         // 將一整串字切成兩行（每行最多 8 個字）
         const line1 = userText.value.slice(0, 8);  // 第 1 到第 8 字
         const line2 = userText.value.slice(8, 16); // 第 9 到第 16 字（自動限制最大 16 字）
         
-        const targetY = canvas.height * 0.855;
+        const targetY = canvas.height * 0.88;
 
         if (line2) {
           // 💡 情況 A：有輸入到第九個字以上，需要畫兩行
