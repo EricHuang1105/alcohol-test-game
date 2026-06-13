@@ -1068,7 +1068,7 @@ const takePhoto = () => {
   color: #5a3d28;
   outline: none;
   transition: all 0.3s;
-  鎖定文字框大小，避免被亂拉 */
+  /* 鎖定文字框大小，避免被亂拉 */
   resize: none; 
   overflow: hidden;
 }
