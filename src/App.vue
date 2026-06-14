@@ -152,7 +152,7 @@
               v-model="userText" 
               maxlength="16" 
               rows="2" 
-              placeholder="限 16 字，可按 Enter 換行"
+              placeholder="16字上限(可換行)"
               class="custom-photo-input"
               @input="takePhoto" 
             ></textarea>
@@ -1059,7 +1059,7 @@ const takePhoto = () => {
 
 .custom-photo-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 18px 15px 6px 15px;
   border: 2px solid #e6d7c3; /* 柔和的木質米色邊框 */
   border-radius: 12px;
   font-size: 15px;
@@ -1071,6 +1071,7 @@ const takePhoto = () => {
   /* 鎖定文字框大小，避免被亂拉 */
   resize: none; 
   overflow: hidden;
+  letter-spacing: 0px;
 }
 
 /* 輸入框聚焦時變色 */
@@ -1082,6 +1083,7 @@ const takePhoto = () => {
 /* 暫位文字顏色 */
 .custom-photo-input::placeholder {
   color: #c4b39e;
+  letter-spacing: 0.5px;
 
 }
 
