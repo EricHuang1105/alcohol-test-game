@@ -28,7 +28,7 @@
         </div>
         <div class="cover-content">
           <h1 class="main-title">尋找你的微醺精靈</h1>
-          <p>探尋你的內心深處，找到你專屬的微醺精靈!</p>
+          <p>探尋內心深處，找到專屬你的微醺精靈!</p>
           <button @click="handleOpenAgeModal" class="btn btn-start-game" :class="{ 'skip-intro': hasWatchedIntro }">
             開始測驗
           </button>
@@ -628,6 +628,15 @@ const takePhoto = () => {
   overflow: hidden;     /* 隱藏溢出 */
   text-overflow: ellipsis; 
   padding: 0 10px;      
+}
+
+/* 🌟 新增：當手機螢幕寬度小於或等於 385px 時（例如 iPhone 11、iPhone 13 mini）自動啟動 */
+@media screen and (max-width: 385px) {
+  .cover-content p {
+    font-size: 11.5px;    /* 🚀 在窄螢幕手機上自動縮小字體，確保絕對不換行且完整呈現 */
+    letter-spacing: -0.3px; /* 稍微縮緊字距 */
+    padding: 0 4px;       /* 釋放邊緣空間 */
+  }
 }
 
 /* 🌟 修改後的按鈕共用樣式 */
