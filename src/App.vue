@@ -6,9 +6,7 @@
     
     <link rel="preload" href="/chamei_shake.mp4" as="video" type="video/mp4">
 
-    <button v-if="step !== 'start-page'" @click="toggleMute" class="btn-mute">
-      {{ isMuted ? '🔇' : '🔊' }}
-    </button>
+    
     
     
 
@@ -37,6 +35,11 @@
       
       <div v-else-if="step === 'quiz'" :key="'quiz'" style="width: 100%; position: relative;">
         
+      <button @click="toggleMute" class="bgm-btn-quiz" title="切換背景音樂">
+      <svg v-if="!isMuted" viewBox="0 0 24 24" class="bgm-icon"><path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      <svg v-else viewBox="0 0 24 24" class="bgm-icon"><path fill="currentColor" d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l4.73 4.73L21 19.73 4.27 3zM14 7h4V3h-6v5.18l2 2z"/></svg>
+      </button>
+
         <img :src="logo" alt="CHAME CHILL" class="fixed-brand-logo">
         
         <div class="card quiz-page-card">
@@ -86,7 +89,20 @@
         </p>
       </div>
       
-      <div v-else-if="step === 'result'" :key="'result'" class="card result-card" ref="resultCardRef" style="position: relative;">
+      <div v-else-if="step === 'result'" :key="'result'" class="card result-card" ref="resultCardRef" style="position: relative;" @scroll="handleResultScroll">
+        
+  
+<Transition name="fade">
+  <button v-if="showScrollHint" @click="scrollToBottom" class="scroll-hint">
+    <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+  </button>
+</Transition>
+        
+        <button @click="toggleMute" class="bgm-btn-result" title="切換背景音樂">
+        <svg v-if="!isMuted" viewBox="0 0 24 24" class="bgm-icon"><path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        <svg v-else viewBox="0 0 24 24" class="bgm-icon"><path fill="currentColor" d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l4.73 4.73L21 19.73 4.27 3zM14 7h4V3h-6v5.18l2 2z"/></svg>
+        </button>
+        
         <img :src="logo" alt="CHAME CHILL" class="brand-logo-result-left">
         <p class="result-pre">你的微醺精靈是</p>
         <h2 class="result-title" :style="{ color: resultData.textColor }">{{ resultData.title }}</h2>
@@ -150,9 +166,9 @@
             <textarea 
               id="photo-input"
               v-model="userText" 
-              maxlength="16" 
+              maxlength="30" 
               rows="2" 
-              placeholder="16字上限(可換行)"
+              placeholder="限 16 個中文字，長英文可自動適配"
               class="custom-photo-input"
               @input="takePhoto" 
             ></textarea>
@@ -186,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 
 // 1. 匯入所有資源
@@ -238,12 +254,37 @@ bgm.volume = 0.2
 const clickSound = new Audio(clickFile)
 clickSound.volume = 0.5 
 
+// ... 上方原本的 const clickSound = new Audio(clickFile) ...
+// clickSound.volume = 0.5 
+
+// 🌟 新增：處理網頁可見度變化（切換分頁或手機退到背景）的專屬邏輯
+const handleVisibilityChange = () => {
+  if (document.hidden) {
+    // 網頁進入背景（或切換分頁） -> 無條件強制暫停 BGM
+    bgm.pause();
+  } else {
+    // 網頁回到前景 -> 檢查是否需要恢復播放
+    // 條件：使用者目前沒有手動靜音，且不是在「首頁 (start-page)」
+    if (!isMuted.value && step.value !== 'start-page') {
+      bgm.play().catch(() => {});
+    }
+  }
+};
+
 onMounted(() => {
-  bgm.load()
-  clickSound.load()
+  bgm.load();
+  clickSound.load();
+  
+  
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 })
 
-// 🌟 刪除原本的，直接換成這段「零延遲」的秒開寫法
+
+onUnmounted(() => {
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+})
+
+
 const playClickSound = () => {
   if (!isMuted.value && clickSound) {
     // 核心魔法 1：把播放進度強制拉回開頭（0秒），這樣連續狂點也不會卡住
@@ -294,6 +335,28 @@ const rawCapture = ref(null) // 用來暫存照片，防止打字跑版
 
 const resultCardRef = ref(null)
 const isGenerating = ref(false)
+
+// 🌟 控制下滑提示顯示與否的變數
+const showScrollHint = ref(true)
+
+// 🌟 當使用者在結果頁滑動超過 20px 時，自動隱藏提示
+const handleResultScroll = (e) => {
+  if (e.target.scrollTop > 20 && showScrollHint.value) {
+    showScrollHint.value = false;
+  }
+}
+
+// 🌟 核心邏輯：控制結果頁面自動向下捲動
+const scrollToBottom = () => {
+  playClickSound();
+  if (resultCardRef.value) {
+    // 讓卡片向下捲動 300 像素，並加上平滑過渡效果
+    resultCardRef.value.scrollBy({
+      top: 300, 
+      behavior: 'smooth'
+    });
+  }
+}
 
 const handleDownloadCard = async () => {
   playClickSound();
@@ -424,6 +487,9 @@ const handleReset = () => {
   bgm.pause(); 
   bgm.currentTime = 0;
   
+  // 🌟 新增：重新測驗時，把下滑提示叫回來
+  showScrollHint.value = true;
+
   hasWatchedIntro.value = true; // 重置時，強迫標記為「已看過動畫」
 }
 // 改用 window.open 並加上 "_blank"，讓商城在新的分頁開啟
@@ -567,15 +633,30 @@ const takePhoto = () => {
         let lines = [];
         const rawLines = userText.value.split('\n'); // 依照手動換行來切割字串
         
-        rawLines.forEach(text => {
-          // 防呆機制：如果使用者忘記按 Enter，且單行打超過 8 個字，依然強制折行以免衝出相框
-          if (text.length > 8) {
-            lines.push(text.slice(0, 8));
-            if (text.slice(8, 16)) lines.push(text.slice(8, 16));
-          } else {
-            lines.push(text);
-          }
-        });
+        // 🌟 新增：中英文智慧字元權重折行邏輯
+rawLines.forEach(text => {
+  let currentLine = "";
+  let currentLength = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    // 使用正則表達式檢查是否為中文字元或全形標點
+    const charLength = /[^\x00-\xff]/.test(char) ? 2 : 1;
+
+    // 當目前累積權重加上新字元超過單行上限（16碼 = 8個中文字寬度）時強制折行
+    if (currentLength + charLength > 16) {
+      lines.push(currentLine);
+      currentLine = char;
+      currentLength = charLength;
+    } else {
+      currentLine += char;
+      currentLength += charLength;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+});
         
         // 確保最終最多只會畫出 2 行
         lines = lines.slice(0, 2);
@@ -613,9 +694,23 @@ const takePhoto = () => {
   font-style: normal;
 }
 
+/* 局部修改後 */
 .container { 
-  max-width: 400px; margin: 0 auto; min-height: 100vh; background: #fdf5e6; 
-  padding: 20px; box-sizing: border-box; position: relative; display: flex; flex-direction: column; justify-content: center;
+  max-width: 400px; 
+  margin: 0 auto; 
+  background: #fdf5e6; 
+  padding: 20px; 
+  box-sizing: border-box; 
+  position: relative; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+  height: 100dvh !important;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  overflow: hidden;
 }
 
 /* 封面副標題設定 */
@@ -718,7 +813,7 @@ const takePhoto = () => {
   cursor: pointer; margin: 15px auto; font-size: 14px; display: block;
 }
 
-.btn-mute { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.8); border: 1px solid #8b4513; color: #8b4513; padding: 8px 12px; border-radius: 20px; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
 
 .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 100%; box-sizing: border-box; }
 .main-title { font-size: 26px; line-height: 1.8; color: #8b4513; margin: 20px 0; }
@@ -934,18 +1029,18 @@ const takePhoto = () => {
 /* 新的 Logo 固定樣式 */
 .fixed-brand-logo {
   position: fixed;        /* 鎖定位置，不會隨滾動或內容變化而移動 */
-  top: 20px;              /* 距離螢幕最上方 20px */
+  top: 30px;              /* 距離螢幕最上方 20px */
   left: 50%;
   transform: translateX(-50%);
-  width: 90px;            /* 設定你喜歡的大小 */
+  width: 100px;            /* 設定你喜歡的大小 */
   height: auto;
-  z-index: 100;           /* 確保在最上層 */
+  z-index: 1000;           /* 確保在最上層 */
   pointer-events: none;
 }
 
 /* 確保卡片內容不會被 Logo 擋住 */
 .quiz-page-card {
-  margin-top: 80px !important; /* 騰出空間給上面的 Logo */
+  margin-top: 0px !important; /* 騰出空間給上面的 Logo */
 }
 
 /* ===================================================
@@ -1012,6 +1107,82 @@ const takePhoto = () => {
 
 .btn-prev:hover {
   color: #8b4513; /* 滑鼠移過去時變成品牌咖啡色 */
+}
+
+/* ===================================================
+   🎵 BGM 右上角半透明玻璃感開關按鈕
+   =================================================== */
+/* ===================================================
+   🎵 1. 測驗頁面（Quiz）：長螢幕（iPhone 11）預設視窗固定位置
+   =================================================== */
+.bgm-btn-quiz {
+  position: fixed;        /* 🔒 鎖定螢幕視窗，不隨卡片內容移動 */
+  top: 40px;              /* 💎 iPhone 11 的舒適上方間距 */
+  right: 20px;            /* 💎 右上角黃金定位 */
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;     /* 強制正圓形 */
+  border: 1px solid rgba(139, 69, 19, 0.15);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: #8b4513; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 200;           /* 提升層級，確保絕對不被卡片或插畫遮擋 */
+}
+.bgm-btn-quiz:active { transform: scale(0.95); }
+
+/* ===================================================
+   🎵 2. 結果頁面（Result）：長螢幕（iPhone 11）預設視窗固定位置
+   =================================================== */
+.bgm-btn-result {
+  position: absolute;        /* 🔒 鎖定螢幕視窗 */
+  top: 10px;              /* 🎯 長螢幕下往下微移，優雅避開結果頁大標題與商標 */
+  right: 10px;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;     /* 強制正圓形 */
+  border: 1px solid rgba(139, 69, 19, 0.15);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: #8b4513; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 200;           /* 修正：將 z-index 從 10 提升到 200，防止圖層被 result-card 蓋過去變扁 */
+}
+.bgm-btn-result:active { transform: scale(0.95); }
+
+
+/* 向量圖示共用尺寸縮放限制 */
+.bgm-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.bgm-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.05);
+}
+
+.bgm-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.bgm-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 /* ===================================================
@@ -1094,6 +1265,136 @@ const takePhoto = () => {
   color: #c4b39e;
   letter-spacing: 0.5px;
 
+}
+
+/* ===================================================
+   📱 針對長螢幕手機（高度小於 740px，如 iPhone 11）的例外放大調校
+   =================================================== */
+@media screen and (max-height: 741px) {
+  .quiz-page-card {
+    /* 💎 螢幕夠長，向下推回 80px，維持大氣、留白的文青比例 */
+    margin-top: 70px !important; 
+  }
+  
+  .fixed-brand-logo {
+     top: 45px !important; 
+  }
+
+/* 如果你的 Logo 在所有頁面都要統一往下移以避免裁切，直接改這段通用樣式 */
+.fixed-brand-logo {
+  position: fixed;
+  top: 20px !important; /* 🌟 這是全域修正，增加 Logo 與頂部的安全距離 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: auto;
+  z-index: 100;
+  pointer-events: none;
+}
+
+  .bgm-toggle-btn {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+ }
+
+  .fixed-brand-logo {
+    top: 10px;        /* Logo 恢復原本的舒適高度 */
+    width: 90px;      /* Logo 恢復原本放大比例 */
+  }
+ 
+ .bgm-btn-quiz {
+  position: fixed;
+  top: 20px;          /* 🎯 釘在測驗卡片外螢幕的右上角 */
+  right: 20px;
+ }
+ 
+ .bgm-btn-result {
+   position: absolute; 
+    top: 10px;
+    right: 10px;
+  }
+
+  .btn-option {
+    padding: 18px 20px; /* 選項按鈕恢復原本大氣的內距 */
+    margin: 12px 0;     /* 恢復原本寬鬆的按鈕間距 */
+  }
+
+}
+.cover-card,
+.camera-card,
+.loading-card,
+.quiz-page-card {
+  max-height: none;
+  overflow: hidden;
+  touch-action: none;        /* 🔒 只有這幾個頁面維持絕對不准亂動 */
+}
+
+.result-card {
+  max-height: 82vh !important;     /* 限制高度，保留上下呼吸空間 */
+  overflow-x: hidden !important;   /* 鎖死左右滑動 */
+  overflow-y: auto !important;     /* 🚀 關鍵魔法：允許內部上下滾動！ */
+  
+  touch-action: pan-y !important;  /* 告訴手機系統：這裡只接收上下滑動指令 */
+  -webkit-overflow-scrolling: touch; /* 讓 iOS 滑起來像 App 一樣有慣性 */
+
+  /* 確保卡片維持在正中央，不被隱形滾動條擠歪 */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  scrollbar-gutter: stable; 
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ===================================================
+   👇 極簡風格：向下箭頭提示器
+   =================================================== */
+.scroll-hint {
+  position: fixed;
+  bottom: 60px;          /* 🎯 稍微調整位置 */
+  right: 20px;
+  
+  pointer-events: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: rgba(255, 255, 255, 0.2); /* 稍微調高不透明度，讓箭頭更清楚 */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(4px);
+  
+  width: 40px;            /* 設定固定寬高成為正圓形 */
+  height: 40px;
+  border-radius: 50%;     /* 變成完美的圓形 */
+  
+  box-shadow: 0 4px 10px rgba(139, 69, 19, 0.2); 
+  border: 1px solid rgba(139, 69, 19, 0.1);
+  
+  color: #8b4513;         /* 品牌色咖啡色 */
+  z-index: 150;
+  pointer-events: auto;   /* 穿透點擊 */
+  
+  /* 呼叫彈跳動畫 */
+  animation: bounceDown 2s infinite ease-in-out;
+}
+
+.scroll-arrow {
+  width: 24px;            /* 稍微放大箭頭 */
+  height: 24px;
+}
+
+/* 輕盈的上下彈跳動畫 */
+@keyframes bounceDown {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(8px); /* 彈跳幅度稍微拉大一點，更吸睛 */
+  }
+  60% {
+    transform: translateY(4px);
+  }
 }
 
 </style>
