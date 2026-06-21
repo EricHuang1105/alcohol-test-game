@@ -168,7 +168,7 @@
               v-model="userText" 
               maxlength="30" 
               rows="2" 
-              placeholder="限 16 個中文字，長英文可自動適配"
+              placeholder="Ex:我愛CHAMECHILL~"
               class="custom-photo-input"
               @input="takePhoto" 
             ></textarea>
