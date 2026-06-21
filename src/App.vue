@@ -168,7 +168,7 @@
               v-model="userText" 
               maxlength="30" 
               rows="2" 
-              placeholder="Ex:我愛CHAMECHILL~"
+              placeholder="Ex:我愛CHAMECHILL"
               class="custom-photo-input"
               @input="takePhoto" 
             ></textarea>
