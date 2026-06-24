@@ -683,6 +683,25 @@ rawLines.forEach(text => {
     };
   };
 }
+
+// 🌟 1. 新增一個用來記錄目前是不是正在打字的響應式變數
+const isFocused = ref(false)
+
+// 🌟 2. 當輸入框失焦時，稍微延遲將狀態改回 false，確保點擊事件能完美觸發
+const handleInputBlur = () => {
+  setTimeout(() => {
+    isFocused.value = false;
+  }, 150);
+}
+
+// 你的 blurInput 函數保持不變即可：
+const blurInput = () => {
+  playClickSound(); // 順便播放你原本寫好的點擊音效，給使用者極佳的回饋感！
+  if (inputRef.value) {
+    inputRef.value.blur(); // 強制 Android 鍵盤收起！
+  }
+}
+
 </script>
 
 <style scoped>
@@ -1237,6 +1256,35 @@ rawLines.forEach(text => {
   margin-bottom: 6px;
 }
 
+<div class="input-word-section">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+    <label for="photo-input" style="margin-bottom: 0;">在這裡留個言吧：</label>
+    
+    <Transition name="fade">
+      <button 
+        v-if="isFocused" 
+        @click="blurInput" 
+        class="btn-input-confirm"
+      >
+        ✓ 完成
+      </button>
+    </Transition>
+  </div>
+  
+  <textarea
+    id="photo-input"
+    ref="inputRef"
+    v-model="userText"
+    maxlength="30"
+    rows="2"
+    placeholder="限 16 個中文字，長英文可自動適配"
+    class="custom-photo-input"
+    @input="takePhoto"
+    @focus="isFocused = true"
+    @blur="handleInputBlur"
+  ></textarea>
+</div>
+
 .custom-photo-input {
   width: 100%;
   padding: 18px 15px 6px 15px;
@@ -1395,6 +1443,37 @@ rawLines.forEach(text => {
   60% {
     transform: translateY(4px);
   }
+}
+
+/* ===================================================
+   🚀 Android 防呆：輸入框專屬「完成」按鈕
+   =================================================== */
+.btn-input-confirm {
+  background: #8b4513 !important; /* 使用你的品牌咖啡色 */
+  color: white !important;
+  border: none !important;
+  
+  /* 緊湊、精緻的微型按鈕尺寸 */
+  padding: 4px 12px !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  border-radius: 12px !important;
+  
+  cursor: pointer;
+  margin: 0 !important;
+  width: auto !important; /* 覆蓋掉全局 .btn 的 100% 寬度 */
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.2);
+}
+
+/* 點擊時的輕微縮小回饋 */
+.btn-input-confirm:active {
+  transform: scale(0.95);
+  background: #733c10 !important;
 }
 
 </style>
