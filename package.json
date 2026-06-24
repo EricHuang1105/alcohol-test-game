@@ -10,11 +10,10 @@
   },
   "dependencies": {
     "html2canvas": "^1.4.1",
-    "vue": "^3.5.32"
+    "vue": "^3.4.15"
   },
   "devDependencies": {
-    "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "@vitejs/plugin-vue": "^6.0.5",
-    "vite": "^8.0.4"
+    "@vue/plugin-vue": "^5.0.3",
+    "vite": "^5.1.0"
   }
 }
