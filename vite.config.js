@@ -1,23 +1,23 @@
 import { defineConfig } from 'vite'
-import vue from '@vue/plugin-vue'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// 🌟 核心破局：改用本地相對路徑直接去載入 Vue 編譯核心，不再依賴 npm 的伺服器下載！
+const localVuePlugin = path.resolve(__dirname, 'node_modules/@vue/plugin-vue/dist/index.mjs')
+let vuePlugin = null
+
+if (fs.existsSync(localVuePlugin)) {
+  const module = await import(`file://${localVuePlugin}`)
+  vuePlugin = module.default || module
+}
+
 export default defineConfig({
-  // 🌟 這行最神聖！重新掛載 Vue 編譯引擎，徹底解決 "Install @vitejs/plugin-vue" 報錯
-  plugins: [vue()],
-  
+  plugins: vuePlugin ? [vuePlugin()] : [],
   server: {
-    host: true, // 🚀 開啟區網連線，讓手機看得到電腦
-    port: 5173,
-    
-    // 🌟 直接讀取你本機現有的安全憑證，強制解鎖 Android 手機相機權限！
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'localhost+2.pem')),
-    }
+    host: true,
+    port: 5173
   }
 })
