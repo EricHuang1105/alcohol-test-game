@@ -161,18 +161,31 @@
             <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
           </div>
 
-<div class="input-word-section">
-            <label for="photo-input">在這裡留個言吧：</label>
-            <textarea 
-              id="photo-input"
-              v-model="userText" 
-              maxlength="30" 
-              rows="2" 
-              placeholder="Ex:我愛CHAMECHILL"
-              class="custom-photo-input"
-              @input="takePhoto" 
-            ></textarea>
+          <!-- 調整後的留言與按鈕並排結構 -->
+          <div class="input-word-section">
+            <label for="photo-input">在照片上留個言吧：</label>
+            
+            <div class="input-with-btn-row">
+              <textarea 
+                id="photo-input"
+                ref="inputRef"
+                v-model="userText"
+                maxlength="30"
+                rows="2"
+                placeholder="Ex:我愛CHAMECHILL"
+                class="custom-photo-input"
+                @input="takePhoto"
+                @focus="isFocused = true"
+                @blur="handleInputBlur"
+              ></textarea>
+
+              <Transition name="fade">
+                <button v-if="isFocused" @click="blurInput" class="btn-input-confirm-side">
+                  ✓
+                </button>
+              </Transition>
             </div>
+          </div>
 
         
           <div style="margin-top: 20px;">
@@ -685,6 +698,7 @@ rawLines.forEach(text => {
 }
 
 // 🌟 1. 新增一個用來記錄目前是不是正在打字的響應式變數
+const inputRef = ref(null)
 const isFocused = ref(false)
 
 // 🌟 2. 當輸入框失焦時，稍微延遲將狀態改回 false，確保點擊事件能完美觸發
@@ -1256,35 +1270,6 @@ const blurInput = () => {
   margin-bottom: 6px;
 }
 
-<div class="input-word-section">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-    <label for="photo-input" style="margin-bottom: 0;">在這裡留個言吧：</label>
-    
-    <Transition name="fade">
-      <button 
-        v-if="isFocused" 
-        @click="blurInput" 
-        class="btn-input-confirm"
-      >
-        ✓ 完成
-      </button>
-    </Transition>
-  </div>
-  
-  <textarea
-    id="photo-input"
-    ref="inputRef"
-    v-model="userText"
-    maxlength="30"
-    rows="2"
-    placeholder="限 16 個中文字，長英文可自動適配"
-    class="custom-photo-input"
-    @input="takePhoto"
-    @focus="isFocused = true"
-    @blur="handleInputBlur"
-  ></textarea>
-</div>
-
 .custom-photo-input {
   width: 100%;
   padding: 18px 15px 6px 15px;
@@ -1448,26 +1433,62 @@ const blurInput = () => {
 /* ===================================================
    🚀 Android 防呆：輸入框專屬「完成」按鈕
    =================================================== */
-.btn-input-confirm {
-  background: #8b4513 !important; /* 使用你的品牌咖啡色 */
+/* 🌟 全新：輸入框與右側按鈕的並排容器 */
+.input-with-btn-row {
+  display: flex;
+  align-items: stretch; /* 讓按鈕高度自動拉伸與輸入框等高 */
+  gap: 10px;            /* 輸入框與按鈕的間距 */
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* 🌟 修改：讓輸入框在並排時自動分配寬度 */
+.custom-photo-input {
+  flex: 1;              
+  
+  /* 🌟 1. 鎖定你現在覺得最完美的框框總高度（大概是 42px~46px 左右，可微調） */
+  height: 44px;
+  
+  /* 🌟 2. 獨立控制四個方向的內距：上、右、下、左 */
+  padding-top: 12px;    /* 👈 關鍵：加大上面，把字往下推到正中央 */
+  padding-right: 10px;  
+  padding-bottom: 0px;  /* 👈 下面不留白，避免把框撐大 */
+  padding-left: 10px;   /* 👈 左邊留白，讓字不要撞到邊框 */
+  
+  border: 1px solid #e6d7c3;
+  border-radius: 12px;
+  font-size: 15px;
+  box-sizing: border-box; /* 這個魔法讓 padding 不會影響總高度 */
+  background-color: #fffaf0;
+  color: #5a3d28;
+  outline: none;
+  transition: all 0.3s;
+  resize: none; 
+  overflow: hidden;
+  letter-spacing: 0px;
+}
+
+/* 🌟 全新：放在右側的專屬勾勾按鈕樣式 */
+.btn-input-confirm-side {
+  background: #8b4513 !important;
   color: white !important;
   border: none !important;
-  
-  /* 緊湊、精緻的微型按鈕尺寸 */
-  padding: 4px 12px !important;
-  font-size: 13px !important;
+  width: 50px !important;      /* 固定寬度，變成一個精緻的方形按鈕 */
+  font-size: 20px !important;   /* 讓勾勾大一點，更好點擊 */
   font-weight: bold !important;
   border-radius: 12px !important;
-  
   cursor: pointer;
-  margin: 0 !important;
-  width: auto !important; /* 覆蓋掉全局 .btn 的 100% 寬度 */
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(139, 69, 19, 0.2);
+  flex-shrink: 0;              /* 防止按鈕被擠壓變形 */
+}
+
+.btn-input-confirm-side:active {
+  transform: scale(0.95);
+  background: #733c10 !important;
 }
 
 /* 點擊時的輕微縮小回饋 */
