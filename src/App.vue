@@ -1457,7 +1457,7 @@ const blurInput = () => {
   
   border: 1px solid #e6d7c3;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 16px;
   box-sizing: border-box; /* 這個魔法讓 padding 不會影響總高度 */
   background-color: #fffaf0;
   color: #5a3d28;
