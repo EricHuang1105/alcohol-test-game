@@ -1534,7 +1534,7 @@ const blurInput = () => {
    🌟 只有螢幕高度小於 740px 的手機，才需要顯示下滑提示
    =================================================== */
 @media screen and (min-height: 741px) {
-  .scroll-hint {
+  .camera-card .scroll-hint {
     display: none !important; /* 只要螢幕高於 741px，強制隱藏箭頭！ */
   }
 
