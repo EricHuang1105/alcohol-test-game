@@ -395,7 +395,7 @@ const scrollCameraToBottom = () => {
   playClickSound();
   if (cameraCardRef.value) {
     cameraCardRef.value.scrollBy({
-      top: 300, 
+      top: 100, 
       behavior: 'smooth'
     });
   }
