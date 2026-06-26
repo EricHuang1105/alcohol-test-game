@@ -369,9 +369,12 @@ const handleResultScroll = (e) => {
 const scrollToBottom = () => {
   playClickSound();
   if (resultCardRef.value) {
-    // 讓卡片向下捲動 300 像素，並加上平滑過渡效果
+    // 🌟 動態偵測：如果螢幕高度 <= 740px，只滑動 150px；大螢幕則維持 300px
+    const scrollDistance = window.innerHeight <= 740 ? 150 : 300;
+
+    // 讓卡片向下捲動，並加上平滑過渡效果
     resultCardRef.value.scrollBy({
-      top: 300, 
+      top: scrollDistance, 
       behavior: 'smooth'
     });
   }
@@ -395,7 +398,7 @@ const scrollCameraToBottom = () => {
   playClickSound();
   if (cameraCardRef.value) {
     cameraCardRef.value.scrollBy({
-      top: 100, 
+      top: 50, 
       behavior: 'smooth'
     });
   }
