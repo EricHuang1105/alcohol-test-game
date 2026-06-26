@@ -1541,7 +1541,14 @@ const blurInput = () => {
 .camera-card {
     overflow-y: hidden !important; /* 2. 拔除上下滾動條 */
     touch-action: none !important; /* 3. 禁止手指觸控拖曳滑動 */
+  /* 🌟 核心修改：縮減卡片上下的總留白，把內容全部往上提！ */
+    padding-top: 12px !important;    
+    padding-bottom: 15px !important; 
+  }
+
+  .camera-card .main-title {
+    /* 🌟 縮小「長按圖片...」標題跟照片的距離 */
+    margin-bottom: 10px !important;  
   }
 }
-
 </style>
