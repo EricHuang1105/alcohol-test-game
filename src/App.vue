@@ -1355,7 +1355,6 @@ const blurInput = () => {
 
 }
 .cover-card,
-.camera-card,
 .loading-card,
 .quiz-page-card {
   max-height: none;
@@ -1363,7 +1362,8 @@ const blurInput = () => {
   touch-action: none;        /* 🔒 只有這幾個頁面維持絕對不准亂動 */
 }
 
-.result-card {
+.result-card,
+.camera-card {
   max-height: 82vh !important;     /* 限制高度，保留上下呼吸空間 */
   overflow-x: hidden !important;   /* 鎖死左右滑動 */
   overflow-y: auto !important;     /* 🚀 關鍵魔法：允許內部上下滾動！ */
