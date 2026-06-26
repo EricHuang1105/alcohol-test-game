@@ -1424,6 +1424,17 @@ const blurInput = () => {
     touch-action: pan-y !important; 
   }
 
+/* 🌟 全新補上：縮減小螢幕卡片的上下留白，把所有內容往上拉！ */
+  .camera-card {
+    padding-top: 12px !important;    /* 將頂部留白從 20px 縮小到 12px */
+    padding-bottom: 15px !important; /* 稍微縮小底部留白 */
+  }
+
+  /* 🌟 全新補上：讓標題跟照片靠得更近一點，節省高度 */
+  .camera-card .main-title {
+    margin-bottom: 10px !important;  
+  }
+
 /* ===================================================
    👇 極簡風格：向下箭頭提示器
    =================================================== */
