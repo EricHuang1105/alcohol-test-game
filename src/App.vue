@@ -137,7 +137,7 @@
         </button>
       </div>
 
-<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card" ref="cameraCardRef" @scroll="handleCameraScroll">
+<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card" :class="{ 'has-photo': generatedPhoto }" ref="cameraCardRef" @scroll="handleCameraScroll">
         
 <Transition name="fade">
           <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
@@ -1411,6 +1411,18 @@ const blurInput = () => {
   width: 100% !important;
   box-sizing: border-box !important;
 }
+
+/* 🌟 1. 拍照前（沒有 has-photo 標籤時）：鎖死滑動！ */
+  .camera-card:not(.has-photo) {
+    overflow-y: hidden !important; 
+    touch-action: none !important; 
+  }
+
+  /* 🌟 2. 拍照後（進入留言頁面，有 has-photo 標籤時）：解鎖滑動！ */
+  .camera-card.has-photo {
+    overflow-y: auto !important; 
+    touch-action: pan-y !important; 
+  }
 
 /* ===================================================
    👇 極簡風格：向下箭頭提示器
