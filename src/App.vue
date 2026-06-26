@@ -137,7 +137,7 @@
         </button>
       </div>
 
-<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
+<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card" ref="cameraCardRef" @scroll="handleCameraScroll">
         
 <Transition name="fade">
           <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
@@ -1528,6 +1528,15 @@ const blurInput = () => {
 .btn-input-confirm:active {
   transform: scale(0.95);
   background: #733c10 !important;
+}
+
+/* ===================================================
+   🌟 只有螢幕高度小於 740px 的手機，才需要顯示下滑提示
+   =================================================== */
+@media screen and (min-height: 741px) {
+  .scroll-hint {
+    display: none !important; /* 只要螢幕高於 741px，強制隱藏箭頭！ */
+  }
 }
 
 </style>
