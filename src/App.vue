@@ -139,6 +139,12 @@
 
 <div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card">
         
+<Transition name="fade">
+          <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
+            <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+          </button>
+        </Transition>
+
         <h2 v-if="!generatedPhoto" class="main-title" style="margin-top:0;">微醺拍貼機</h2>
         
         <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
@@ -365,6 +371,30 @@ const scrollToBottom = () => {
   if (resultCardRef.value) {
     // 讓卡片向下捲動 300 像素，並加上平滑過渡效果
     resultCardRef.value.scrollBy({
+      top: 300, 
+      behavior: 'smooth'
+    });
+  }
+}
+
+// ==========================================
+// 🌟 新增：相機頁面專用的下滑提示邏輯
+// ==========================================
+const cameraCardRef = ref(null)
+const showCameraScrollHint = ref(true) // 控制箭頭顯示或隱藏
+
+// 當使用者自己往下滑動超過 20px 時，自動隱藏箭頭
+const handleCameraScroll = (e) => {
+  if (e.target.scrollTop > 20 && showCameraScrollHint.value) {
+    showCameraScrollHint.value = false;
+  }
+}
+
+// 點擊箭頭時，自動平滑往下滾動
+const scrollCameraToBottom = () => {
+  playClickSound();
+  if (cameraCardRef.value) {
+    cameraCardRef.value.scrollBy({
       top: 300, 
       behavior: 'smooth'
     });
@@ -693,6 +723,9 @@ rawLines.forEach(text => {
 
       // 輸出最終成品
       generatedPhoto.value = canvas.toDataURL('image/png');
+
+      // 🌟 每次成功拍完照、進入留言頁面時，強制喚醒下滑箭頭！
+      showCameraScrollHint.value = true;
     };
   };
 }
