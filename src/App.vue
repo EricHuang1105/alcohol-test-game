@@ -1537,6 +1537,11 @@ const blurInput = () => {
   .scroll-hint {
     display: none !important; /* 只要螢幕高於 741px，強制隱藏箭頭！ */
   }
+
+.camera-card {
+    overflow-y: hidden !important; /* 2. 拔除上下滾動條 */
+    touch-action: none !important; /* 3. 禁止手指觸控拖曳滑動 */
+  }
 }
 
 </style>
