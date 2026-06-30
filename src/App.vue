@@ -140,7 +140,7 @@
 <div v-else-if="step === 'camera'" :key="'camera'">
         
   <!-- 📸 狀態 1. 拍攝中：全螢幕真實相機介面 (黑底、大畫面、實體快門鍵) -->
-  <div v-if="!generatedPhoto" class="native-camera-view">
+  <div v-show="!generatedPhoto" class="native-camera-view">
     
     <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
       <svg viewBox="0 0 24 24" class="cancel-icon">
@@ -169,8 +169,7 @@
   </div>
 
   <!-- 📝 狀態 2. 拍攝後：留言預覽卡片 (完美繼承你之前調好的白底排版與滑動邏輯) -->
-  <div v-else class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">
-    <Transition name="fade">
+    <div v-show="generatedPhoto" class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">    <Transition name="fade">
       <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
         <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
       </button>
