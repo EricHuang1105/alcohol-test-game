@@ -137,69 +137,83 @@
         </button>
       </div>
 
-<div v-else-if="step === 'camera'" :key="'camera'" class="card camera-card" :class="{ 'has-photo': generatedPhoto }" ref="cameraCardRef" @scroll="handleCameraScroll">
+<div v-else-if="step === 'camera'" :key="'camera'">
         
-<Transition name="fade">
-          <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
-            <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-          </button>
-        </Transition>
+  <!-- 📸 狀態 1. 拍攝中：全螢幕真實相機介面 (黑底、大畫面、實體快門鍵) -->
+  <div v-if="!generatedPhoto" class="native-camera-view">
+    
+    <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
+      <svg viewBox="0 0 24 24" class="cancel-icon">
+        <circle cx="12" cy="12" r="12" fill="rgba(255, 255, 255, 0.25)" />
+        <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
 
-        <h2 v-if="!generatedPhoto" class="main-title" style="margin-top:0;">微醺拍貼機</h2>
-        
-        <h2 v-else class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
-          長按圖片可以儲存/分享哦!
-        </h2>
-        
-        <div v-show="!generatedPhoto">
-          <div class="camera-wrapper">
-            <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
-            <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
-          </div>
-          <div style="margin-top: 20px;">
-            <button @click="takePhoto" class="btn">咔嚓📸</button>
-            <button @click="closeCamera" class="btn btn-outline">返回結果</button>
-          </div>
-        </div>
-
-        <div v-show="generatedPhoto">
-          <div class="generated-photo-wrapper">
-            <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
-          </div>
-
-          <!-- 調整後的留言與按鈕並排結構 -->
-          <div class="input-word-section">
-            <label for="photo-input">在照片上留個言吧：</label>
-            
-            <div class="input-with-btn-row">
-              <textarea 
-                id="photo-input"
-                ref="inputRef"
-                v-model="userText"
-                maxlength="30"
-                rows="2"
-                placeholder="Ex:我愛CHAMECHILL"
-                class="custom-photo-input"
-                @input="takePhoto"
-                @focus="isFocused = true"
-                @blur="handleInputBlur"
-              ></textarea>
-
-              <Transition name="fade">
-                <button v-if="isFocused" @click="blurInput" class="btn-input-confirm-side">
-                  ✓
-                </button>
-              </Transition>
-            </div>
-          </div>
-
-        
-          <div style="margin-top: 20px;">
-            <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
-            <button @click="closeCamera" class="btn">返回結果</button>
-          </div>
-        </div>
+    <div class="native-camera-content">
+      <!-- 沿用原本的 camera-wrapper，但在黑底全螢幕下會自動放到最大 -->
+      <div class="camera-wrapper fullscreen-wrapper">
+        <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
+        <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
       </div>
+    </div>
+    
+    <!-- 底部真實相機控制列 -->
+    <div class="native-camera-bottom">
+      
+      
+      <!-- 仿真實相機的同心圓快門鍵 -->
+      <button @click="takePhoto" class="shutter-btn">
+        <div class="shutter-btn-inner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 📝 狀態 2. 拍攝後：留言預覽卡片 (完美繼承你之前調好的白底排版與滑動邏輯) -->
+  <div v-else class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">
+    <Transition name="fade">
+      <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
+        <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+      </button>
+    </Transition>
+
+    <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
+      長按圖片可以儲存/分享哦!
+    </h2>
+    
+    <div class="generated-photo-wrapper">
+      <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
+    </div>
+
+    <!-- 調整後的留言與按鈕並排結構 -->
+    <div class="input-word-section">
+      <label for="photo-input">在照片上留個言吧：</label>
+      <div class="input-with-btn-row">
+        <textarea 
+          id="photo-input"
+          ref="inputRef"
+          v-model="userText"
+          maxlength="30"
+          rows="2"
+          placeholder="Ex:我愛CHAMECHILL"
+          class="custom-photo-input"
+          @input="takePhoto"
+          @focus="isFocused = true"
+          @blur="handleInputBlur"
+        ></textarea>
+
+        <Transition name="fade">
+          <button v-if="isFocused" @click="blurInput" class="btn-input-confirm-side">✓</button>
+        </Transition>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
+      <button @click="closeCamera" class="btn">返回結果</button>
+    </div>
+  </div>
+
+</div>
 
     </Transition>
 
@@ -1577,4 +1591,122 @@ const blurInput = () => {
     margin-bottom: 10px !important;  
   }
 }
+
+/* ===================================================
+   📸 沉浸式：真實相機 (Native Camera) 專屬視覺設計
+   =================================================== */
+.native-camera-view {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px; /* 完美吻合外部 container，防止在電腦大螢幕暴走 */
+  height: 100dvh;
+  background-color: #000; /* 真實相機的純黑背景 */
+  z-index: 9999; /* 蓋過所有網站底色和 Logo */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.native-camera-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 10px; /* 讓兩側保留一小點呼吸空間 */
+  box-sizing: border-box;
+}
+
+.fullscreen-wrapper {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px; /* 稍微縮小圓角，更像真實取景框 */
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); /* 微弱的環境光暈 */
+}
+
+/* 🌟 修改：取消按鈕的定位與點擊特效 */
+.native-cancel-btn-top {
+  position: absolute;
+  top: 25px;       
+  left: 20px;      
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;  
+  padding: 5px;   
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease; /* 加入平滑縮放特效 */
+}
+
+/* 點擊時稍微縮小，提供真實按鈕的物理回饋感 */
+.native-cancel-btn-top:active {
+  transform: scale(0.85);
+}
+
+/* 🌟 新增：專門控制叉叉圖示的大小 */
+.cancel-icon {
+  width: 32px;  /* 控制圓形圖示的直徑 */
+  height: 32px;
+}
+
+.native-camera-bottom {
+  height: 150px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center; /* 🚀 關鍵：讓裡面唯一的快門鍵完美正中央置中！ */
+  align-items: center;
+  background-color: #000;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.native-cancel-btn {
+  color: #fff;
+  font-size: 17px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-weight: bold;
+  margin-top: -100px;
+}
+
+/* 🌟 核心靈魂：真實相機的快門鍵 */
+.shutter-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: transparent;
+  border: 4px solid #fff; /* 外面白圈 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* 消除點擊怪異藍光 */
+  margin-bottom: 80px;
+}
+
+.shutter-btn-inner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fff; /* 內部白圈 */
+  transition: all 0.15s ease-out; /* 模擬彈簧阻尼感 */
+}
+
+/* 點擊快門時的動態回饋 (內圈縮小、變暗) */
+.shutter-btn:active .shutter-btn-inner {
+  transform: scale(0.85);
+  background: #ccc;
+}
+
 </style>
