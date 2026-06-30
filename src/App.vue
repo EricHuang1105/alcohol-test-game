@@ -144,7 +144,7 @@
     
     <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
       <svg viewBox="0 0 24 24" class="cancel-icon">
-        <circle cx="12" cy="12" r="12" fill="rgba(255, 255, 255, 0.25)" />
+        <circle cx="12" cy="12" r="12" fill="rgba(139, 69, 19, 0.1)" />
         <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" />
       </svg>
     </button>
@@ -1602,7 +1602,7 @@ const blurInput = () => {
   width: 100%;
   max-width: 400px; /* 完美吻合外部 container，防止在電腦大螢幕暴走 */
   height: 100dvh;
-  background-color: #000; /* 真實相機的純黑背景 */
+  background-color: transparent;
   z-index: 9999; /* 蓋過所有網站底色和 Logo */
   display: flex;
   flex-direction: column;
@@ -1661,7 +1661,7 @@ const blurInput = () => {
   display: flex;
   justify-content: center; /* 🚀 關鍵：讓裡面唯一的快門鍵完美正中央置中！ */
   align-items: center;
-  background-color: #000;
+  background-color: transparent;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1683,7 +1683,7 @@ const blurInput = () => {
   height: 76px;
   border-radius: 50%;
   background: transparent;
-  border: 4px solid #fff; /* 外面白圈 */
+  border: 4px solid #8b4513;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1698,7 +1698,7 @@ const blurInput = () => {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #fff; /* 內部白圈 */
+  background: #8b4513;
   transition: all 0.15s ease-out; /* 模擬彈簧阻尼感 */
 }
 
