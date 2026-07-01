@@ -139,23 +139,27 @@
 
 <div v-else-if="step === 'camera'" :key="'camera'">
         
-  <!-- 📸 狀態 1. 拍攝中：全螢幕真實相機介面 (黑底、大畫面、實體快門鍵) -->
   <div v-show="!generatedPhoto" class="native-camera-view">
     
+    <video ref="videoRef" autoplay playsinline class="fullscreen-video"></video>
+
+    <div class="frame-overlay">
+      <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
+    </div>
+
     <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
       <svg viewBox="0 0 24 24" class="cancel-icon">
-        <circle cx="12" cy="12" r="12" fill="rgba(139, 69, 19, 0.1)" />
+        <circle cx="12" cy="12" r="12" fill="rgba(0, 0, 0, 0.4)" />
         <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" />
       </svg>
     </button>
 
-    <div class="native-camera-content">
-      <!-- 沿用原本的 camera-wrapper，但在黑底全螢幕下會自動放到最大 -->
-      <div class="camera-wrapper fullscreen-wrapper">
-        <video ref="videoRef" autoplay playsinline class="camera-preview"></video>
-        <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
-      </div>
+    <div class="native-camera-bottom-floating">
+      <button @click="takePhoto" class="shutter-btn">
+        <div class="shutter-btn-inner"></div>
+      </button>
     </div>
+  </div>
     
     <!-- 底部真實相機控制列 -->
     <div class="native-camera-bottom">
@@ -1592,7 +1596,7 @@ const blurInput = () => {
 }
 
 /* ===================================================
-   📸 沉浸式：真實相機 (Native Camera) 專屬視覺設計
+   📸 沉浸式：真實相機 (Native Camera) 全螢幕鏡頭設計
    =================================================== */
 .native-camera-view {
   position: fixed;
@@ -1600,34 +1604,46 @@ const blurInput = () => {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 400px; /* 完美吻合外部 container，防止在電腦大螢幕暴走 */
+  max-width: 400px;
   height: 100dvh;
-  background-color: transparent;
-  z-index: 9999; /* 蓋過所有網站底色和 Logo */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  background-color: #000;
+  z-index: 9999;
+  overflow: hidden; /* 確保畫面不超出 */
 }
 
-.native-camera-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 1. 滿版鏡頭背景 */
+.fullscreen-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  overflow: hidden;
-  padding: 0 10px; /* 讓兩側保留一小點呼吸空間 */
-  box-sizing: border-box;
+  height: 100%;
+  object-fit: cover;     /* 🚀 關鍵：讓畫面無情填滿整個螢幕，不留黑邊！ */
+  transform: scaleX(-1); /* 鏡像翻轉 */
+  z-index: 1;            /* 放最底層 */
 }
 
-.fullscreen-wrapper {
+/* 2. 置中相框疊加 */
+.frame-overlay {
+  position: absolute;
+  top: 45%; /* 稍微偏上一點點，留空間給底部快門 */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%; /* 讓相框佔畫面的 85%，不要完全貼齊邊緣 */
+  aspect-ratio: 1080 / 1294; /* 維持你的相框比例 */
+  z-index: 2; /* 蓋在鏡頭上 */
+  pointer-events: none; /* 讓點擊穿透 */
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* 給相框加重陰影，讓它跟背景分離產生立體感 */
+}
+
+.camera-frame {
   width: 100%;
-  max-width: 500px;
-  border-radius: 12px; /* 稍微縮小圓角，更像真實取景框 */
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); /* 微弱的環境光暈 */
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
-/* 🌟 修改：取消按鈕的定位與點擊特效 */
+/* 3. 左上角懸浮取消按鈕 */
 .native-cancel-btn-top {
   position: absolute;
   top: 25px;       
@@ -1635,74 +1651,61 @@ const blurInput = () => {
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 10000;  
+  z-index: 10;  
   padding: 5px;   
   display: flex;
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.2s ease; /* 加入平滑縮放特效 */
+  transition: transform 0.2s ease;
 }
 
-/* 點擊時稍微縮小，提供真實按鈕的物理回饋感 */
 .native-cancel-btn-top:active {
   transform: scale(0.85);
 }
 
-/* 🌟 新增：專門控制叉叉圖示的大小 */
 .cancel-icon {
-  width: 32px;  /* 控制圓形圖示的直徑 */
+  width: 32px;  
   height: 32px;
 }
 
-.native-camera-bottom {
-  height: 150px;
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: center; /* 🚀 關鍵：讓裡面唯一的快門鍵完美正中央置中！ */
-  align-items: center;
-  background-color: transparent;
+/* 4. 底部懸浮快門鍵區塊 */
+.native-camera-bottom-floating {
+  position: absolute;
+  bottom: 50px; /* 距離底部的高度 */
+  left: 0;
   width: 100%;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* 確保蓋在影片上 */
 }
 
-.native-cancel-btn {
-  color: #fff;
-  font-size: 17px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  font-weight: bold;
-  margin-top: -100px;
-}
-
-/* 🌟 核心靈魂：真實相機的快門鍵 */
+/* 🌟 快門鍵本體 (用白色對抗花花綠綠的鏡頭背景) */
 .shutter-btn {
   width: 76px;
   height: 76px;
   border-radius: 50%;
   background: transparent;
-  border: 4px solid #8b4513;
+  border: 4px solid #fff; 
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0;
   margin: 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent; /* 消除點擊怪異藍光 */
-  margin-bottom: 80px;
+  -webkit-tap-highlight-color: transparent; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* 加上陰影防止在白牆前看不見 */
 }
 
 .shutter-btn-inner {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #8b4513;
-  transition: all 0.15s ease-out; /* 模擬彈簧阻尼感 */
+  background: #fff; 
+  transition: all 0.15s ease-out; 
 }
 
-/* 點擊快門時的動態回饋 (內圈縮小、變暗) */
 .shutter-btn:active .shutter-btn-inner {
   transform: scale(0.85);
   background: #ccc;
