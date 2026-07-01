@@ -172,7 +172,7 @@
     <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
       長按圖片可以儲存/分享哦!
     
-    <div class="generated-photo-wrapper">
+    </h2><div class="generated-photo-wrapper">
       <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
     </div>
 
@@ -1700,6 +1700,5 @@ const blurInput = () => {
   background: #ccc;
 }   
 
-// 測試尋找幽靈
 
 </style>
