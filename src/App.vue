@@ -1709,6 +1709,6 @@ const blurInput = () => {
 .shutter-btn:active .shutter-btn-inner {
   transform: scale(0.85);
   background: #ccc;
-}
+}   
 
 </style>
