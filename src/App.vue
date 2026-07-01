@@ -139,72 +139,73 @@
 
 <div v-else-if="step === 'camera'" :key="'camera'">
         
-        <div v-show="!generatedPhoto" class="native-camera-view">
-          
-          <video ref="videoRef" autoplay playsinline class="fullscreen-video"></video>
+  <div v-show="!generatedPhoto" class="native-camera-view">
+    
+    <video ref="videoRef" autoplay playsinline class="fullscreen-video"></video>
 
-          <div class="frame-overlay">
-            <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
-          </div>
+    <div class="frame-overlay">
+      <img :src="resultData.frame" class="camera-frame" crossorigin="anonymous" />
+    </div>
 
-          <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
-            <svg viewBox="0 0 24 24" class="cancel-icon">
-              <circle cx="12" cy="12" r="12" fill="rgba(0, 0, 0, 0.4)" />
-              <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" />
-            </svg>
-          </button>
+    <button @click="closeCamera" class="native-cancel-btn-top" aria-label="取消">
+      <svg viewBox="0 0 24 24" class="cancel-icon">
+        <circle cx="12" cy="12" r="12" fill="rgba(0, 0, 0, 0.4)" />
+        <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" />
+      </svg>
+    </button>
 
-          <div class="native-camera-bottom-floating">
-            <button @click="takePhoto" class="shutter-btn">
-              <div class="shutter-btn-inner"></div>
-            </button>
-          </div>
-        </div>
+    <div class="native-camera-bottom-floating">
+      <button @click="takePhoto" class="shutter-btn">
+        <div class="shutter-btn-inner"></div>
+      </button>
+    </div>
+  </div>
 
-        <div v-show="generatedPhoto" class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">
-          <Transition name="fade">
-            <button v-if="showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
-              <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-            </button>
-          </Transition>
+  <div v-show="generatedPhoto" class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">
+      
+    <Transition name="fade">
+      <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
+        <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+      </button>
+    </Transition>
 
-          <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
-            長按圖片可以儲存/分享哦!
-          </h2>
-          
-          <div class="generated-photo-wrapper">
-            <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
-          </div>
+    <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
+      長按圖片可以儲存/分享哦!
+    
+    <div class="generated-photo-wrapper">
+      <img :src="generatedPhoto" class="final-photo" alt="我的微醺拍貼" />
+    </div>
 
-          <div class="input-word-section">
-            <label for="photo-input">在照片上留個言吧：</label>
-            <div class="input-with-btn-row">
-              <textarea 
-                id="photo-input"
-                ref="inputRef"
-                v-model="userText"
-                maxlength="30"
-                rows="2"
-                placeholder="Ex:我愛CHAMECHILL"
-                class="custom-photo-input"
-                @input="takePhoto"
-                @focus="isFocused = true"
-                @blur="handleInputBlur"
-              ></textarea>
+    <!-- 調整後的留言與按鈕並排結構 -->
+    <div class="input-word-section">
+      <label for="photo-input">在照片上留個言吧：</label>
+      <div class="input-with-btn-row">
+        <textarea 
+          id="photo-input"
+          ref="inputRef"
+          v-model="userText"
+          maxlength="30"
+          rows="2"
+          placeholder="Ex:我愛CHAMECHILL"
+          class="custom-photo-input"
+          @input="takePhoto"
+          @focus="isFocused = true"
+          @blur="handleInputBlur"
+        ></textarea>
 
-              <Transition name="fade">
-                <button v-if="isFocused" @click="blurInput" class="btn-input-confirm-side">✓</button>
-              </Transition>
-            </div>
-          </div>
-
-          <div style="margin-top: 20px;">
-            <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
-            <button @click="closeCamera" class="btn">返回結果</button>
-          </div>
-        </div>
-
+        <Transition name="fade">
+          <button v-if="isFocused" @click="blurInput" class="btn-input-confirm-side">✓</button>
+        </Transition>
       </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
+      <button @click="closeCamera" class="btn">返回結果</button>
+    </div>
+  </div>
+
+</div>
 
     </Transition>
 
