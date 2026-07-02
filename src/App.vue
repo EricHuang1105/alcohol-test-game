@@ -1680,7 +1680,7 @@ const blurInput = () => {
 /* 🌟 核心靈魂：真實相機的快門鍵 */
 .shutter-btn {
   width: 76px;
-  height: 60px;
+  height: 76px;
   border-radius: 50%;
   background: transparent;
   border: 4px solid #8b4513;
@@ -1741,7 +1741,7 @@ const blurInput = () => {
 
   /* 🌟 2. 調整大螢幕「快門鍵」的上下位置 */
   .shutter-btn {
-    margin-bottom: 100px !important; /* 🔼 預設是 80px。數值越大，快門鍵越往「上」抬；數值越小，快門鍵越往「下」降 */
+    margin-bottom: 90px !important; /* 🔼 預設是 80px。數值越大，快門鍵越往「上」抬；數值越小，快門鍵越往「下」降 */
   }
 }
 
