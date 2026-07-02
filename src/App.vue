@@ -1679,8 +1679,8 @@ const blurInput = () => {
 
 /* 🌟 核心靈魂：真實相機的快門鍵 */
 .shutter-btn {
-  width: 76px;
-  height: 76px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: transparent;
   border: 4px solid #8b4513;
