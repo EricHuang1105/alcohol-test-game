@@ -1432,12 +1432,16 @@ const blurInput = () => {
 
   /* 1. 把底部控制列的高度縮小，上面的相框就會自動「放鬆」往下掉 */
   .native-camera-bottom {
-    height: 90px !important; 
+    height: 80px !important; 
   }
 
   /* 2. 把快門鍵下方高達 80px 的推力縮小，讓快門鍵穩穩地坐落到最下方 */
   .shutter-btn {
-    margin-bottom: 10px !important; 
+    margin-bottom: 0px !important; 
+  }
+
+  .native-cancel-btn-top {
+    top: 12px !important;
   }
 
 /* 🌟 1. 拍照前（沒有 has-photo 標籤時）：鎖死滑動！ */
