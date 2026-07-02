@@ -89,8 +89,7 @@
         </p>
       </div>
       
-      <div v-else-if="step === 'result'" :key="'result'" class="card result-card" ref="resultCardRef" style="position: relative;" @scroll="handleResultScroll">
-        
+<div v-else-if="step === 'result'" :key="'result'" class="card result-card" :class="{ 'is-downloading': isGenerating }" ref="resultCardRef" style="position: relative;" @scroll="handleResultScroll">        
   
 <Transition name="fade">
   <button v-if="showScrollHint" @click="scrollToBottom" class="scroll-hint">
@@ -422,13 +421,15 @@ const handleDownloadCard = async () => {
   if (!resultCardRef.value) return;
 
   isGenerating.value = true;
-  await new Promise(resolve => setTimeout(resolve, 150));
+  await nextTick();
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   try {
     const canvas = await html2canvas(resultCardRef.value, {
-      scale: 4, 
+      scale: 3, 
       useCORS: true,
       backgroundColor: '#ffffff'
+      scrollY: -window.scrollY
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -1743,6 +1744,22 @@ const blurInput = () => {
   .shutter-btn {
     margin-bottom: 90px !important; /* 🔼 預設是 80px。數值越大，快門鍵越往「上」抬；數值越小，快門鍵越往「下」降 */
   }
+}
+
+/* ===================================================
+   🛠️ iOS 截圖修復：下載卡片時的專屬安定狀態
+   =================================================== */
+/* 1. 截圖瞬間拔除捲動條並展開全高，防止 iOS 只截到一半 */
+.result-card.is-downloading {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* 2. 截圖瞬間關閉會讓 iOS Safari 算錯尺寸、導致精靈巨大化的動畫與陰影 */
+.result-card.is-downloading .spirit-image {
+  animation: none !important;
+  transform: none !important;
+  filter: none !important; 
 }
 
 </style>
