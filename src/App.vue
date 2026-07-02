@@ -1680,7 +1680,7 @@ const blurInput = () => {
 /* 🌟 核心靈魂：真實相機的快門鍵 */
 .shutter-btn {
   width: 76px;
-  height: 76px;
+  height: 60px;
   border-radius: 50%;
   background: transparent;
   border: 4px solid #8b4513;
@@ -1720,12 +1720,28 @@ const blurInput = () => {
 
   /* 🌟 2. 底部控制列高度再縮小（釋放更多下方空間給相框） */
   .native-camera-bottom {
-    height: 70px !important; 
+    height: 75px !important; 
   }
 
   /* 🌟 3. 快門鍵歸零！完全解除底部推力，讓它順利降落到螢幕最底端 */
   .shutter-btn {
     margin-bottom: 0px !important; 
+  }
+}
+
+/* ===================================================
+   🖥️ 專屬大螢幕 (大於 741px) 的相機介面高低微調
+   =================================================== */
+@media screen and (min-height: 741px) {
+  
+  /* 🌟 1. 調整大螢幕「取消按鈕 (叉叉)」的上下位置 */
+  .native-cancel-btn-top {
+    top: 30px !important;    /* 🔼 預設是 25px。數值越大越往「下」移動，數值越小越往「上」提 */
+  }
+
+  /* 🌟 2. 調整大螢幕「快門鍵」的上下位置 */
+  .shutter-btn {
+    margin-bottom: 100px !important; /* 🔼 預設是 80px。數值越大，快門鍵越往「上」抬；數值越小，快門鍵越往「下」降 */
   }
 }
 
