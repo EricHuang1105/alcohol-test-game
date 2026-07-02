@@ -1589,6 +1589,16 @@ const blurInput = () => {
     /* 🌟 縮小「長按圖片...」標題跟照片的距離 */
     margin-bottom: 10px !important;  
   }
+  
+/* 1. 把底部區塊變矮，中間的相框自然就會「往下掉」 */
+  .native-camera-bottom {
+    height: 90px !important; 
+  }
+
+  /* 2. 拔掉快門鍵超大的底部留白，讓它「往下貼」 */
+  .shutter-btn {
+    margin-bottom: 15px !important; 
+  }
 }
 
 /* ===================================================
