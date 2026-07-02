@@ -428,7 +428,7 @@ const handleDownloadCard = async () => {
     const canvas = await html2canvas(resultCardRef.value, {
       scale: 3, 
       useCORS: true,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
       scrollY: -window.scrollY
     });
 
