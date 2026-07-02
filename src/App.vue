@@ -1679,8 +1679,8 @@ const blurInput = () => {
 
 /* 🌟 核心靈魂：真實相機的快門鍵 */
 .shutter-btn {
-  width: 80px;
-  height: 80px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   background: transparent;
   border: 4px solid #8b4513;
@@ -1736,7 +1736,7 @@ const blurInput = () => {
   
   /* 🌟 1. 調整大螢幕「取消按鈕 (叉叉)」的上下位置 */
   .native-cancel-btn-top {
-    top: 30px !important;    /* 🔼 預設是 25px。數值越大越往「下」移動，數值越小越往「上」提 */
+    top: 25px !important;    /* 🔼 預設是 25px。數值越大越往「下」移動，數值越小越往「上」提 */
   }
 
   /* 🌟 2. 調整大螢幕「快門鍵」的上下位置 */
