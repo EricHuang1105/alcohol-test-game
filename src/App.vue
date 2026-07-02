@@ -1428,22 +1428,6 @@ const blurInput = () => {
   box-sizing: border-box !important;
 }
 
-/* 🔽 補在這裡 🔽 */
-
-  /* 1. 把底部控制列的高度縮小，上面的相框就會自動「放鬆」往下掉 */
-  .native-camera-bottom {
-    height: 80px !important; 
-  }
-
-  /* 2. 把快門鍵下方高達 80px 的推力縮小，讓快門鍵穩穩地坐落到最下方 */
-  .shutter-btn {
-    margin-bottom: 0px !important; 
-  }
-
-  .native-cancel-btn-top {
-    top: 12px !important;
-  }
-
 /* 🌟 1. 拍照前（沒有 has-photo 標籤時）：鎖死滑動！ */
   .camera-card:not(.has-photo) {
     overflow-y: hidden !important; 
@@ -1724,6 +1708,26 @@ const blurInput = () => {
   background: #ccc;
 }
 
+/* ===================================================
+   📱 終極覆蓋：針對小螢幕 (小於 741px) 的相機黃金比例微調
+   =================================================== */
+@media screen and (max-height: 741px) {
+  
+  /* 🌟 1. 取消按鈕再往上提（貼近頂端） */
+  .native-cancel-btn-top {
+    top: 8px !important;
+  }
+
+  /* 🌟 2. 底部控制列高度再縮小（釋放更多下方空間給相框） */
+  .native-camera-bottom {
+    height: 70px !important; 
+  }
+
+  /* 🌟 3. 快門鍵歸零！完全解除底部推力，讓它順利降落到螢幕最底端 */
+  .shutter-btn {
+    margin-bottom: 0px !important; 
+  }
+}
 
 </style>
 
