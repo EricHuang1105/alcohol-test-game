@@ -429,7 +429,18 @@ const handleDownloadCard = async () => {
       scale: 3, 
       useCORS: true,
       backgroundColor: '#ffffff',
-      scrollY: -window.scrollY
+      scrollY: -window.scrollY,
+      // 🌟 核心修復：告訴截圖套件「忽略」任何帶有 'bgm-btn-result' 類別的元素
+      ignoreElements: (element) => {
+        if (element.classList && element.classList.contains('bgm-btn-result')) {
+          return true; // return true 代表「忽略這個元素，不要截圖」
+        }
+        // 如果未來還有其他不想被截圖的按鈕（例如下滑提示箭頭），也可以加在這裡
+        if (element.classList && element.classList.contains('scroll-hint')) {
+          return true; 
+        }
+        return false;
+      }
     });
 
     const imgData = canvas.toDataURL('image/png');
