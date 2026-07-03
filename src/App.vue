@@ -1743,9 +1743,14 @@ const blurInput = () => {
     font-size: 15px !important;      /* 稍微微調字體（原本 16px），讓扁平按鈕的字體比例更精緻 */
   }
 
-/* 🌟 1. 強制給卡片底部加上安全距離，把整張卡片往上推！ */
+/* 🌟 1. 歸零卡片推力，避免頂部被擠出螢幕 */
   .camera-card.has-photo {
-    margin-bottom: 25px !important; 
+    margin-bottom: 0px !important; 
+  }
+
+  /* 🌟 2. 【全新大絕招】稍微縮小照片寬度，高度就會按比例大幅縮短，釋放超多垂直空間！ */
+  .camera-card.has-photo .generated-photo-wrapper {
+    width: 90% !important; /* 原本是 100%。縮到 90% 足以救回所有被裁切的空間 */
   }
 
   /* 🌟 2. 把卡片底部的白色留白稍微縮小，讓邊界更貼近「返回結果」按鈕 */
