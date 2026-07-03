@@ -1739,6 +1739,15 @@ const blurInput = () => {
   .shutter-btn {
     margin-bottom: 0px !important; 
   }
+
+/* 🎯 特地針對相機留言頁面的按鈕縮小高度 */
+  .camera-card.has-photo .btn {
+    padding-top: 10px !important;    /* 🚀 關鍵：將上下內距從 15px 縮小到 10px，按鈕會明顯變扁 */
+    padding-bottom: 10px !important;
+    margin-top: 10px !important;     /* 🚀 縮小按鈕與按鈕之間的上下間距（原本是 15px） */
+    font-size: 15px !important;      /* 稍微微調字體（原本 16px），讓扁平按鈕的字體比例更精緻 */
+  }
+
 }
 
 /* ===================================================
