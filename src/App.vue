@@ -1752,7 +1752,7 @@ const blurInput = () => {
   .camera-card.has-photo .generated-photo-wrapper {
     width: 95% !important; /* 原本是 100%。縮到 90% 足以救回所有被裁切的空間 */
   }
-
+}
 
 /* ===================================================
    🖥️ 專屬大螢幕 (大於 741px) 的相機介面高低微調
