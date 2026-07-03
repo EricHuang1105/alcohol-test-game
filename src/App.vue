@@ -377,7 +377,7 @@ const scrollToBottom = () => {
   playClickSound();
   if (resultCardRef.value) {
     // 🌟 動態偵測：如果螢幕高度 <= 740px，只滑動 200px；大螢幕則維持 300px
-    const scrollDistance = window.innerHeight <= 740 ? 200 : 300;
+    const scrollDistance = window.innerHeight <= 740 ? 230 : 300;
 
     // 讓卡片向下捲動，並加上平滑過渡效果
     resultCardRef.value.scrollTo({
