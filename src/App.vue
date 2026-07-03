@@ -167,6 +167,7 @@
     </div>
   </div>
 
+<div v-show="generatedPhoto" class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">
 
     <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
       長按圖片可以儲存/分享哦!
@@ -1751,7 +1752,6 @@ const blurInput = () => {
   .camera-card {
     padding-bottom: 10px !important; /* 原本是 15px */
   }
-
 }
 
 /* ===================================================
