@@ -167,12 +167,6 @@
     </div>
   </div>
 
-  <!-- 📝 狀態 2. 拍攝後：留言預覽卡片 (完美繼承你之前調好的白底排版與滑動邏輯) -->
-    <div v-show="generatedPhoto" class="card camera-card has-photo" ref="cameraCardRef" @scroll="handleCameraScroll">    <Transition name="fade">
-      <button v-if="generatedPhoto && showCameraScrollHint" @click="scrollCameraToBottom" class="scroll-hint">
-        <svg viewBox="0 0 24 24" class="scroll-arrow"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-      </button>
-    </Transition>
 
     <h2 class="main-title" style="margin-top:0; font-size: 18px; color: #6f4d38; font-weight: 900;">
       長按圖片可以儲存/分享哦!
@@ -1746,6 +1740,16 @@ const blurInput = () => {
     padding-bottom: 10px !important;
     margin-top: 10px !important;     /* 🚀 縮小按鈕與按鈕之間的上下間距（原本是 15px） */
     font-size: 15px !important;      /* 稍微微調字體（原本 16px），讓扁平按鈕的字體比例更精緻 */
+  }
+
+/* 🌟 1. 強制給卡片底部加上安全距離，把整張卡片往上推！ */
+  .camera-card.has-photo {
+    margin-bottom: 25px !important; 
+  }
+
+  /* 🌟 2. 把卡片底部的白色留白稍微縮小，讓邊界更貼近「返回結果」按鈕 */
+  .camera-card {
+    padding-bottom: 10px !important; /* 原本是 15px */
   }
 
 }
