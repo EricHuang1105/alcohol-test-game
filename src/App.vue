@@ -380,32 +380,8 @@ const scrollToBottom = () => {
     const scrollDistance = window.innerHeight <= 740 ? 200 : 300;
 
     // 讓卡片向下捲動，並加上平滑過渡效果
-    resultCardRef.value.scrollBy({
+    resultCardRef.value.scrollTo({
       top: scrollDistance, 
-      behavior: 'smooth'
-    });
-  }
-}
-
-// ==========================================
-// 🌟 新增：相機頁面專用的下滑提示邏輯
-// ==========================================
-const cameraCardRef = ref(null)
-const showCameraScrollHint = ref(true) // 控制箭頭顯示或隱藏
-
-// 當使用者自己往下滑動超過 20px 時，自動隱藏箭頭
-const handleCameraScroll = (e) => {
-  if (e.target.scrollTop > 20 && showCameraScrollHint.value) {
-    showCameraScrollHint.value = false;
-  }
-}
-
-// 點擊箭頭時，自動平滑往下滾動
-const scrollCameraToBottom = () => {
-  playClickSound();
-  if (cameraCardRef.value) {
-    cameraCardRef.value.scrollBy({
-      top: 70, 
       behavior: 'smooth'
     });
   }
