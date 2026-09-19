@@ -850,6 +850,15 @@ const blurInput = () => {
   color: #444; line-height: 1.4;
 }
 
+.btn-option { 
+  display: block; width: 100%; padding: 18px 20px; margin: 12px 0; 
+  border: 2px solid #eee; border-radius: 15px; background: white; 
+  text-align: left; font-size: 15px; cursor: pointer; transition: all 0.3s ease; 
+  color: #444; line-height: 1.4;
+  
+  /* 🌟 新增這行：強制消除手機瀏覽器預設的點擊閃爍（灰框/藍框） */
+  -webkit-tap-highlight-color: transparent; 
+}
 
 /* 分享按鈕與重新測驗 */
 .btn-share { background: #dc5b00; margin-top: 20px; }
