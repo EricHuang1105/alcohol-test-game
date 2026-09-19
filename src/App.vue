@@ -849,8 +849,21 @@ const blurInput = () => {
   text-align: left; font-size: 15px; cursor: pointer; transition: all 0.3s ease; 
   color: #444; line-height: 1.4;
 }
-.btn-option:hover, .btn-option:active { 
-  background: #fff8f0; border-color: #8b4513; color: #8b4513;
+
+/* 1. 只有「真正支援滑鼠的設備 (電腦)」才有 hover 懸停效果 */
+@media (hover: hover) {
+  .btn-option:hover {
+    background: #fff8f0; border-color: #8b4513; color: #8b4513;
+  }
+}
+
+/* 2. 所有設備 (包含手機) 手指/滑鼠按下去的瞬間，顯示棕色框 */
+.btn-option:active {
+  background: #fff8f0 !important; 
+  border-color: #8b4513 !important; 
+  color: #8b4513 !important;
+  
+  -webkit-tap-highlight-color: transparent; 
 }
 
 /* 分享按鈕與重新測驗 */
@@ -1350,7 +1363,7 @@ const blurInput = () => {
 .custom-photo-input::placeholder {
   color: #c4b39e;
   letter-spacing: 0.5px;
-
+  color: transparent;
 }
 
 /* ===================================================
