@@ -187,7 +187,7 @@
           v-model="userText"
           maxlength="30"
           rows="2"
-          placeholder="Ex:我愛CHAMECHILL"
+          placeholder="點擊此處留言"
           class="custom-photo-input"
           @input="takePhoto"
           @focus="isFocused = true"
@@ -201,7 +201,7 @@
     </div>
 
     <div style="margin-top: 20px;">
-      <button @click="closeCamera" class="btn">返回結果</button>
+      <button @click="closeCamera" class="btn">返回</button>
       <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
     </div>
   </div>
