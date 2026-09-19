@@ -52,7 +52,7 @@
           <div class="options">
             <button 
               v-for="(opt, i) in questions[currentQuestion].options" 
-              :key="i" 
+              :key="currentQuestion + '-' + i" 
               @click="handleOptionClick(opt.score)"
               class="btn-option"
             >
@@ -250,7 +250,7 @@ import clickFile from './assets/click.mp3'
 import animalCivet from './assets/home_civet.png'              // 1. 白鼻心
 import animalPangolin from './assets/home_pangolin.png'        // 2. 穿山甲
 import animalSquirrel from './assets/home_squirrel.png'        // 3. 白面鼯鼠
-import animalLeopardCat from './assets/home_leopard.png'       // 4. 石虎 (注意對齊你資料夾的檔名 home_leopard.png)
+import animalLeopardCat from './assets/home_leopard.png'       // 4. 石虎
 import animalMagpie from './assets/home_magpie.png'            // 5. 台灣藍鵲
 
 import frame1 from './assets/frame_1.png'
