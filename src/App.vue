@@ -201,8 +201,8 @@
     </div>
 
     <div style="margin-top: 20px;">
-      <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
       <button @click="closeCamera" class="btn">返回結果</button>
+      <button @click="retakePhoto" class="btn btn-outline">重新拍攝</button>
     </div>
   </div>
 
