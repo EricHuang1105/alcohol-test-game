@@ -511,7 +511,7 @@ const handleOptionClick = (score) => {
       step.value = 'loading'; 
       setTimeout(() => { step.value = 'result' }, 3000); 
     }
-  }, 150); 
+  }, 100); 
 }
 
 // 返回上一題的邏輯
@@ -850,21 +850,6 @@ const blurInput = () => {
   color: #444; line-height: 1.4;
 }
 
-/* 1. 只有「真正支援滑鼠的設備 (電腦)」才有 hover 懸停效果 */
-@media (hover: hover) {
-  .btn-option:hover {
-    background: #fff8f0; border-color: #8b4513; color: #8b4513;
-  }
-}
-
-/* 2. 所有設備 (包含手機) 手指/滑鼠按下去的瞬間，顯示棕色框 */
-.btn-option:active {
-  background: #fff8f0 !important; 
-  border-color: #8b4513 !important; 
-  color: #8b4513 !important;
-  
-  -webkit-tap-highlight-color: transparent; 
-}
 
 /* 分享按鈕與重新測驗 */
 .btn-share { background: #dc5b00; margin-top: 20px; }
