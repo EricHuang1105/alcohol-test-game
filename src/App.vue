@@ -513,6 +513,7 @@ const handleOptionClick = (score) => {
       setTimeout(() => { step.value = 'result' }, 3000); 
     }
   }, 150); // 👈 150 毫秒是視覺反饋與流暢度之間的最佳平衡點
+}
 
 // 返回上一題的邏輯
 const handlePrevQuestion = () => {
