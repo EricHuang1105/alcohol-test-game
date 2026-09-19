@@ -501,8 +501,7 @@ const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿
 const handleOptionClick = (score) => {
   playClickSound(); 
   
-  // 🌟 核心魔法：設定 150 毫秒的微小延遲，讓使用者能看清楚棕色點擊框！
-  setTimeout(() => {
+   setTimeout(() => {
     scoreHistory.value.push(score); // 1. 把這題的分數存進歷史紀錄
     totalScore.value += score;      // 2. 加上總分
     
@@ -512,7 +511,7 @@ const handleOptionClick = (score) => {
       step.value = 'loading'; 
       setTimeout(() => { step.value = 'result' }, 3000); 
     }
-  }, 150); // 👈 150 毫秒是視覺反饋與流暢度之間的最佳平衡點
+  }, 100); 
 }
 
 // 返回上一題的邏輯
@@ -524,20 +523,25 @@ const handlePrevQuestion = () => {
     totalScore.value -= lastScore;              // 3. 把總分扣掉這個分數，完美還原！
   }
 }
+
 const handleReset = () => {  
   playClickSound(); 
   step.value = 'start-page'; 
   currentQuestion.value = 0; 
   totalScore.value = 0; 
-  scoreHistory.value = []; // 重新測驗時清空歷史紀錄
+  scoreHistory.value = []; 
   bgm.pause(); 
   bgm.currentTime = 0;
   
-  // 🌟 新增：重新測驗時，把下滑提示叫回來
   showScrollHint.value = true;
+  hasWatchedIntro.value = true; 
 
-  hasWatchedIntro.value = true; // 重置時，強迫標記為「已看過動畫」
+  // 🌟 核心修改 4：重新測驗時，徹底刪除拍貼機的紀錄
+  generatedPhoto.value = null;
+  rawCapture.value = null;
+  userText.value = '';
 }
+
 // 改用 window.open 並加上 "_blank"，讓商城在新的分頁開啟
 const handleGoToStore = () => { 
   playClickSound(); 
@@ -548,37 +552,49 @@ const handleGoToStore = () => {
 // 8. 拍立得 (相機與合成邏輯)
 // ==========================================
 
-// 📸 開啟相機
-const openCamera = async () => {
-  playClickSound();
-  step.value = 'camera'; // 切換到相機頁面
-  generatedPhoto.value = null; // 確保每次進來都是乾淨的相機畫面
-  userText.value = ''; // 每次進來拍貼機，都把文字輸入框清空
-
+// 🌟 核心修改 1：把「啟動鏡頭」的程式碼獨立出來，方便重複呼叫
+const startCameraStream = async () => {
   try {
-    // 請求前置鏡頭權限
     const stream = await navigator.mediaDevices.getUserMedia({ 
       video: { 
         facingMode: 'user',
-        width: { ideal: 4096 },  // 故意要求極高的寬度
-        height: { ideal: 2160 }  // 故意要求極高的高度
+        width: { ideal: 4096 },  
+        height: { ideal: 2160 }  
       } 
     });
     
-    // 確保 Vue 已經渲染了 video 標籤後，再將影像流灌入
     setTimeout(() => {
-        if (videoRef.value) {
-          videoRef.value.srcObject = stream;
-        }
-      }, 400);
+      if (videoRef.value) {
+        videoRef.value.srcObject = stream;
+      }
+    }, 400);
   } catch (err) {
     console.error("相機權限錯誤:", err);
     alert("無法開啟相機，請確認您已允許瀏覽器使用相機權限喔！");
-    step.value = 'result'; // 拒絕權限的話，退回結果頁
+    step.value = 'result'; 
   }
 }
 
-// 📸 關閉相機 (切換頁面時釋放硬體資源，避免相機綠燈一直亮著)
+// 📸 開啟相機 (或恢復上次的照片)
+const openCamera = async () => {
+  playClickSound();
+  step.value = 'camera'; // 切換到相機/相片頁面
+  
+  // 🌟 核心修改 2：進來時先檢查，如果有拍好的照片，就「直接返回」，不開鏡頭也不清空！
+  if (generatedPhoto.value) {
+    return; 
+  }
+
+  // 確保是全新拍攝時，才清空畫面
+  generatedPhoto.value = null; 
+  userText.value = ''; 
+  rawCapture.value = null;
+
+  // 呼叫啟動鏡頭
+  await startCameraStream();
+}
+
+// 📸 關閉相機 (維持原本的不變)
 const closeCamera = () => {
   playClickSound();
   if (videoRef.value && videoRef.value.srcObject) {
@@ -588,13 +604,14 @@ const closeCamera = () => {
   step.value = 'result'; // 返回結果頁
 }
 
-// 📸 拍照與合成下載 (完美比例裁切版)
-
-// 重拍按鈕邏輯
-const retakePhoto = () => {
+// 📸 重拍按鈕邏輯
+const retakePhoto = async () => { // 🌟 注意這裡加上了 async
   playClickSound();
-  generatedPhoto.value = null; // 把照片清空
-  rawCapture.value = null;
+  generatedPhoto.value = null; // 把合成好的照片清空
+  rawCapture.value = null;     // 把定格的人臉清空
+  
+  // 🌟 核心修改 3：因為重拍代表要新畫面，必須強制重新啟動鏡頭！
+  await startCameraStream();
 }
 
 const takePhoto = () => {
