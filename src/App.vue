@@ -500,16 +500,19 @@ const handleAlertUnderage = () => { playClickSound(); alert("未滿 18 歲請勿
 // 點擊選項 (下一題)
 const handleOptionClick = (score) => {
   playClickSound(); 
-  scoreHistory.value.push(score); // 1. 把這題的分數存進歷史紀錄
-  totalScore.value += score;      // 2. 加上總分
   
-  if (currentQuestion.value < questions.length - 1) { 
-    currentQuestion.value++; 
-  } else { 
-    step.value = 'loading'; 
-    setTimeout(() => { step.value = 'result' }, 3000); 
-  }
-}
+  // 🌟 核心魔法：設定 150 毫秒的微小延遲，讓使用者能看清楚棕色點擊框！
+  setTimeout(() => {
+    scoreHistory.value.push(score); // 1. 把這題的分數存進歷史紀錄
+    totalScore.value += score;      // 2. 加上總分
+    
+    if (currentQuestion.value < questions.length - 1) { 
+      currentQuestion.value++; 
+    } else { 
+      step.value = 'loading'; 
+      setTimeout(() => { step.value = 'result' }, 3000); 
+    }
+  }, 150); // 👈 150 毫秒是視覺反饋與流暢度之間的最佳平衡點
 
 // 返回上一題的邏輯
 const handlePrevQuestion = () => {
