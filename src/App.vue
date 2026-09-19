@@ -511,7 +511,7 @@ const handleOptionClick = (score) => {
       step.value = 'loading'; 
       setTimeout(() => { step.value = 'result' }, 3000); 
     }
-  }, 100); 
+  }, 150); 
 }
 
 // 返回上一題的邏輯
